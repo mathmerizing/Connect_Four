@@ -1,4 +1,5 @@
 # Connect-Four
+*by Yerso Checya Sinti and Julian Roth* <br><br>
 A Java version of the game "Connect Four". Learning about Minimax and Alpha-beta pruning.
 
 ## MODES:
