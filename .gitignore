@@ -53,3 +53,6 @@ fabric.properties
 modules.xml
 *.class
 *.ini
+
+/src/META-INF/MANIFEST.MF
+/.idea/artifacts/
