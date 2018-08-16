@@ -13,14 +13,14 @@ public class Board
     private Stack availableTiles = new Stack();
     private HashMap tiles = new HashMap(2);
 
-    public Board()
+    Board()
     {
         //set the available tiles
         availableTiles.push("X");
         availableTiles.push("O");
     }
 
-    public Board copy()
+    Board copy()
     {
         Board out = new Board();
         out.setBoardState(this);
@@ -29,9 +29,8 @@ public class Board
     }
 
 
-    public boolean isGameOver()
+    boolean isGameOver()
     {
-
         //check horizontally
         for (int i = 0; i < this.ROWS; i++)
         {
@@ -46,8 +45,6 @@ public class Board
                 }
             }
         }
-
-        //System.out.println("Checked horizontally...");
 
         //check vertically
         for (int i = 0; i < this.ROWS - 3; i++)
@@ -64,8 +61,6 @@ public class Board
             }
         }
 
-        //System.out.println("Checked vertically...");
-
         //check diagonally (topleft - bottomright)
         for (int i = 0; i < this.ROWS - 3; i++)
         {
@@ -81,9 +76,7 @@ public class Board
             }
         }
 
-        //System.out.println("Checked daigonally... (1)");
-
-        //check diagonally (bottomleft - topright) --- WORK IN PROGRESS
+        //check diagonally (bottomleft - topright)
         for (int i = this.ROWS - 1; i > 3; i--)
         {
             for (int j = 0; j < this.COLUMNS - 3; j++)
@@ -98,13 +91,11 @@ public class Board
             }
         }
 
-        //System.out.println("Checked daigonally... (2)");
-
         //GAME IS NOT OVER:
         return false;
     }
 
-    public void nextMove(int playerNum, int column) throws
+    void nextMove(int playerNum, int column) throws
             Exception
     {
         if (!IntStream.of(this.getPossibleMoves()).anyMatch(x->x == column))
@@ -122,7 +113,7 @@ public class Board
         }
     }
 
-    public int[] getPossibleMoves()
+    int[] getPossibleMoves()
     {
         if (isGameOver())
         {
@@ -143,12 +134,12 @@ public class Board
     }
 
 
-    public int[][] getBoardState()
+    int[][] getBoardState()
     {
         return this.boardState;
     }
 
-    public void setBoardState(Board in)
+    private void setBoardState(Board in)
     {
         for (int i = 0; i < in.ROWS; i++)
         {
@@ -159,12 +150,12 @@ public class Board
         }
     }
 
-    public int getColumns()
+    int getColumns()
     {
         return this.COLUMNS;
     }
 
-    public int getRows()
+    int getRows()
     {
         return this.ROWS;
     }
@@ -206,13 +197,13 @@ public class Board
         s.append("\n");
     }
 
-    public String popTile()
+    String popTile()
     {
         return (String) this.availableTiles.pop();
     }
 
 
-    public void setHashMap(int playerNum, String tileType)
+    void setHashMap(int playerNum, String tileType)
     {
         this.tiles.put(playerNum, tileType);
     }

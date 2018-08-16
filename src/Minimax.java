@@ -40,14 +40,11 @@ public class Minimax
             evaluatedMoves[i] = minimax(boardCopy, depth - 1, alpha, beta, !maximizingPlayer);
         }
         int pos = board.getPossibleMoves()[0];
-        System.out.println(pos);
         int biggestValue = Integer.MIN_VALUE;
         for (int i = 0; i < board.getPossibleMoves().length; i++) {
             if (evaluatedMoves[i] > biggestValue) {
-                System.out.println("EINGETRETEN!");
                 pos = board.getPossibleMoves()[i];
                 biggestValue = evaluatedMoves[i];
-                System.out.println("Biggest Value: " + biggestValue);
             }
         }
         return pos;
@@ -58,10 +55,7 @@ public class Minimax
     {
         if (depth == 0 || board.getPossibleMoves().length == 0)
         {
-            //System.out.println(Arrays.deepToString(board.getBoardState()));
-            int value = evaluate(board, maximizingPlayer);
-            System.out.println("VALUE::: " + value);
-            return value;
+            return evaluate(board, maximizingPlayer);
         }
 
         if (maximizingPlayer)
@@ -98,8 +92,8 @@ public class Minimax
         }
     }
 
-	/*
-    private int evaluate(Board board, boolean maximizingPlayer)
+	  @Deprecated
+    private int oldEvaluate(Board board, boolean maximizingPlayer)
     {
         if (board.isGameOver())
         {
@@ -125,7 +119,6 @@ public class Minimax
                 {4, 6, 8, 10, 8, 6, 4},
                 {3, 4, 5, 7, 5, 4, 3}};
 
-        //System.out.println(Arrays.deepToString(vals));
         int sum = 0;
 
         for (int i = 0; i < board.getRows(); i++)
@@ -133,13 +126,12 @@ public class Minimax
             for (int j = 0; j < board.getColumns(); j++)
             {
                 sum += vals[i][j] * board.getBoardState()[i][j];
-                //System.out.println("Row: " + i + " Column: " + j + " Sum: " + sum);
             }
         }
 
         return sum;
     }
-	*/
+
 
     private int[][] bS = {{3, 4, 5, 7, 5, 4, 3}, // coefficients for board values
             {4, 6, 8, 10, 8, 6, 4},
@@ -149,7 +141,7 @@ public class Minimax
             {3, 4, 5, 7, 5, 4, 3}};
     private int[] cS = {0, 10, 100}; // coefficients for x in a row
 
-    public int evaluate(Board board, boolean maximizingPlayer) {
+    private int evaluate(Board board, boolean maximizingPlayer) {
         if (board.isGameOver()) {
             if (maximizingPlayer) {
                 return Integer.MIN_VALUE;
@@ -177,11 +169,11 @@ public class Minimax
         return total;
     }
 
-    public int connectedStrength(Board board) {
+    private int connectedStrength(Board board) {
         int total = 0;
         int color;
-        IntegerPair a = null;
-        IntegerPair b = null;
+        IntegerPair a;
+        IntegerPair b;
         int[][] s = {{1,1,0,-1},{0,1,1,1}}; //up/down, up-right/down-left, right/left, down-right/up-left
         IntegerPair last;
         boolean[][] visited = new boolean[board.getRows()][board.getColumns()];
@@ -229,11 +221,12 @@ public class Minimax
         return new IntegerPair(same-1, len-1);
     }
 
-    /*
-	private int yersoEvaluate(Board board, boolean maximizingPlayer) {
+    @Deprecated
+    private int yersoEvaluate(Board board, boolean maximizingPlayer) {
         return scoreCounter(board, maximizingPlayer) - scoreCounter(board, !maximizingPlayer);
     }
 
+    @Deprecated
     private int scoreCounter(Board board, boolean maximizingPlayer) {
         //horizontal score
         int currentPlayer = 1;
@@ -296,5 +289,4 @@ public class Minimax
         max = Math.max(max, counter);
         return max;
     }
-	*/
 }

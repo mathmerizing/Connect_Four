@@ -8,7 +8,7 @@ public class Main
 
     /**
      * Main method <br>
-     * Choose between single- and multiplayer.
+     * Choose between single- and multi player.
      *
      * @param args "-single" for singlePlayer mode and "-multi" for multiPlayer mode
      */
@@ -40,13 +40,12 @@ public class Main
         Player[] players = new Player[2];
 
         Scanner scanner = new Scanner(System.in);
-        scanner.useDelimiter("\\n");
 
         System.out.println("Enter the first player's name: ");
-        String firstPlayer = scanner.next();
+        String firstPlayer = scanner.nextLine();
 
         System.out.println("Enter the second player's name: ");
-        String secondPlayer = scanner.next();
+        String secondPlayer = scanner.nextLine();
 
         players[0] = new Human(firstPlayer, 1, board);
         players[1] = new Human(secondPlayer, 2, board);
@@ -62,13 +61,14 @@ public class Main
         Player[] players = new Player[2];
 
         Scanner scanner = new Scanner(System.in);
-        scanner.useDelimiter("\\n");
 
         System.out.println("Enter your name: ");
-        String name = scanner.next();
+        String name = scanner.nextLine();
+
+        System.out.println(name);
 
         System.out.println("Do you want to be first? (y/n)");
-        String isFirst = scanner.next();
+        String isFirst = scanner.nextLine();
 
         int i = 0;
         int j = 1;
