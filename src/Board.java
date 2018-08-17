@@ -77,7 +77,7 @@ public class Board
         }
 
         //check diagonally (bottomleft - topright)
-        for (int i = this.ROWS - 1; i > 3; i--)
+        for (int i = this.ROWS - 1; i >= 3; i--)
         {
             for (int j = 0; j < this.COLUMNS - 3; j++)
             {

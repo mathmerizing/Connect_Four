@@ -1,17 +1,17 @@
-public class IntegerPair {
-    int first;
-    int second;
+class IntegerPair {
+    private int first;
+    private int second;
 
-    public IntegerPair(int first, int second) {
+    IntegerPair(int first, int second) {
         this.first = first;
         this.second = second;
     }
 
-    public int first() {
+    int getFirst() {
         return this.first;
     }
 
-    public int second() {
+    int getSecond() {
         return this.second;
     }
 }

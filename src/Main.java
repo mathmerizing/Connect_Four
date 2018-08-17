@@ -65,8 +65,6 @@ public class Main
         System.out.println("Enter your name: ");
         String name = scanner.nextLine();
 
-        System.out.println(name);
-
         System.out.println("Do you want to be first? (y/n)");
         String isFirst = scanner.nextLine();
 

@@ -15,7 +15,7 @@ A Java version of the game "Connect Four". Learning about Minimax and Alpha-beta
 ### MULTI PLAYER:
   User1 plays against User2 on the same PC.
  
-Currently working on a good evaluation function and a general performance optimization.
+Currently working on general performance optimization.
 
 ## GUIDE TO MINIMAX AND ALPHA-BETA PRUNING:
 
