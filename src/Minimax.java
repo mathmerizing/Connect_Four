@@ -17,9 +17,8 @@ public class Minimax
         try
         {
             leaveCount = 0;
-            board.nextMove(this.playerNum, this.minimaxMove(board, this.depth, Integer.MIN_VALUE, Integer.MAX_VALUE,
-                                                            true));
-            System.err.println("      Number of leaves: " + leaveCount);
+            board.nextMove(this.playerNum, this.minimaxMove(board, this.depth));
+            //System.err.println("      Number of leaves: " + leaveCount);
         }
         catch (Exception e)
         {
@@ -27,17 +26,16 @@ public class Minimax
         }
     }
 
-    private int minimaxMove(Board board, int depth, int alpha, int beta, boolean maximizingPlayer) throws
+    private int minimaxMove(Board board, int depth) throws
             Exception
     {
-        int maxEval = Integer.MIN_VALUE;
         int[] evaluatedMoves = new int[board.getPossibleMoves().length];
-        System.err.println("      possible moves: " + evaluatedMoves.length);
+        //System.err.println("      possible moves: " + evaluatedMoves.length);
         for (int i = 0; i < board.getPossibleMoves().length; i++)
         {
             Board boardCopy = board.copy();
             boardCopy.nextMove(1, board.getPossibleMoves()[i]);
-            evaluatedMoves[i] = minimax(boardCopy, depth - 1, alpha, beta, !maximizingPlayer);
+            evaluatedMoves[i] = minimax(boardCopy, depth - 1, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
         }
         int pos = board.getPossibleMoves()[0];
         int biggestValue = Integer.MIN_VALUE;
@@ -97,14 +95,14 @@ public class Minimax
         }
     }
 
-    private int[][] boardCoefficients = {{3, 4, 5, 7, 5, 4, 3}, // coefficients for board values
+    private final int[][] boardCoefficients = {{3, 4, 5, 7, 5, 4, 3}, // coefficients for board values
             {4, 6, 8, 10, 8, 6, 4},
             {5, 8, 11, 13, 11, 8, 5},
             {5, 8, 11, 13, 11, 8, 5},
             {4, 6, 8, 10, 8, 6, 4},
             {3, 4, 5, 7, 5, 4, 3}};
 
-    private int[] xInRowCoefficients = {0, 10, 100}; // coefficients for x in a row
+    private final int[] xInRowCoefficients = {0, 10, 100}; // coefficients for x in a row
 
     private int evaluate(Board board, boolean maximizingPlayer)
     {
@@ -166,7 +164,7 @@ public class Minimax
         return count;
     }
 
-    private final int EMPTY_COLOR = 0;
+
 
     private IntegerPair getLengthPair(Board board, IntegerPair last, IntegerPair direction, int playerColor,
                                       boolean[][] visited)
@@ -177,7 +175,7 @@ public class Minimax
 
         int playerLength = getLength(board, position, direction, playerColor, visited, 0);
 
-        int possibleLength = getLength(board, position, direction, EMPTY_COLOR, visited, playerLength);
+        int possibleLength = getLength(board, position, direction, board.getEmptyColor(), visited, playerLength);
 
         return new IntegerPair(playerLength, possibleLength);
     }
@@ -197,9 +195,6 @@ public class Minimax
 
             if (a.getSecond() + b.getSecond() >= 3)
             {
-                if (a.getFirst() + b.getFirst() >= 3) {
-                    System.out.println(board);
-                }
                 strength += color * xInRowCoefficients[a.getFirst() + b.getFirst()];
             }
         }
@@ -220,7 +215,7 @@ public class Minimax
                     continue;
                 }
                 int color = board.getBoardState()[row][col];
-                if (color != EMPTY_COLOR)
+                if (color != board.getEmptyColor())
                 {
                     total += getStrength(board, new IntegerPair(row, col), color, visited, s);
                 }

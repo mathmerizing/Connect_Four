@@ -4,11 +4,11 @@ import java.util.Stack;
 import java.util.stream.IntStream;
 import java.util.Collections;
 
-public class Board
+class Board
 {
-
     private final int ROWS = 6;
     private final int COLUMNS = 7;
+    private final int EMPTY_COLOR = 0;
     private int[][] boardState = new int[ROWS][COLUMNS];
     private Stack availableTiles = new Stack();
     private HashMap tiles = new HashMap(2);
@@ -206,5 +206,10 @@ public class Board
     void setHashMap(int playerNum, String tileType)
     {
         this.tiles.put(playerNum, tileType);
+    }
+
+    int getEmptyColor()
+    {
+        return this.EMPTY_COLOR;
     }
 }

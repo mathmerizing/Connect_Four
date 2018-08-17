@@ -3,7 +3,7 @@ import java.util.Random;
 public class Bot
         extends Player
 {
-    public Bot(int playerNum, Board board) throws
+    Bot(int playerNum, Board board) throws
             Exception
     {
         super("The Bot", playerNum, board);

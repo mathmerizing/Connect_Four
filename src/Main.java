@@ -91,11 +91,11 @@ public class Main
             {
                 if (!gameOver)
                 {
-                    long startTime = System.currentTimeMillis();
+                    //long startTime = System.currentTimeMillis();
                     player.move(board);
-                    long endTime = System.currentTimeMillis();
-                    System.err.println("      INFO ::: " + player.getName() + "'s move took " + (0.0 + endTime -
-                            startTime) / 1000 + " seconds.");
+                    //long endTime = System.currentTimeMillis();
+                    //System.err.println("      INFO ::: " + player.getName() + "'s move took " + (0.0 + endTime -
+                    //        startTime) / 1000 + " seconds.");
 
                     System.out.println(player.getName() + "'s move:\n" + board);
 

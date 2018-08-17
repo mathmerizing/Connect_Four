@@ -1,15 +1,15 @@
-public abstract class Player
+abstract class Player
 {
-    protected final String name;
-    protected int playerNum;
+    final String name;
+    int playerNum;
     private String tileType;
 
-    public Player(String name, int playerNum, Board board) throws
+    Player(String name, int playerNum, Board board) throws
             Exception
     {
-        if (playerNum == 0)
+        if (playerNum == board.getEmptyColor())
         {
-            throw new Exception("playerNum must not be equal to 0!");
+            throw new Exception("playerNum must not be equal to " + board.getEmptyColor() + " !");
         }
 
         this.name = name;
@@ -21,7 +21,7 @@ public abstract class Player
 
     public abstract void move(Board board);
 
-    public String getName()
+    String getName()
     {
         return this.name;
     }
