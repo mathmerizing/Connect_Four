@@ -39,7 +39,7 @@ class Board
                 if (this.boardState[i][j] == this.boardState[i][j + 1] &&
                         this.boardState[i][j + 1] == this.boardState[i][j + 2] &&
                         this.boardState[i][j + 2] == this.boardState[i][j + 3] &&
-                        this.boardState[i][j] != 0)
+                        this.boardState[i][j] != this.getEmptyColor())
                 {
                     return true;
                 }
@@ -54,7 +54,7 @@ class Board
                 if (this.boardState[i][j] == this.boardState[i + 1][j] &&
                         this.boardState[i + 1][j] == this.boardState[i + 2][j] &&
                         this.boardState[i + 2][j] == this.boardState[i + 3][j] &&
-                        this.boardState[i][j] != 0)
+                        this.boardState[i][j] != this.getEmptyColor())
                 {
                     return true;
                 }
@@ -69,7 +69,7 @@ class Board
                 if (this.boardState[i][j] == this.boardState[i + 1][j + 1] &&
                         this.boardState[i + 1][j + 1] == this.boardState[i + 2][j + 2] &&
                         this.boardState[i + 2][j + 2] == this.boardState[i + 3][j + 3] &&
-                        this.boardState[i][j] != 0)
+                        this.boardState[i][j] != this.getEmptyColor())
                 {
                     return true;
                 }
@@ -84,7 +84,7 @@ class Board
                 if (this.boardState[i][j] == this.boardState[i - 1][j + 1] &&
                         this.boardState[i - 1][j + 1] == this.boardState[i - 2][j + 2] &&
                         this.boardState[i - 2][j + 2] == this.boardState[i - 3][j + 3] &&
-                        this.boardState[i][j] != 0)
+                        this.boardState[i][j] != this.getEmptyColor())
                 {
                     return true;
                 }
@@ -105,7 +105,7 @@ class Board
 
         for (int i = ROWS - 1; i > -1; i--)
         {
-            if (this.boardState[i][column] == 0)
+            if (this.boardState[i][column] == this.getEmptyColor())
             {
                 this.boardState[i][column] = playerNum;
                 break;
