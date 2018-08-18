@@ -15,7 +15,7 @@ A Java version of the game "Connect Four". Learning about Minimax and Alpha-beta
 ### MULTI PLAYER:
   User1 plays against User2 on the same PC.
  
- ### USER INPUT:
+ ## USER INPUT:
  Follow the instructions.<br>
  When asked to enter your move, please enter an integer between 0 and 6. <br>
  0 is the column on the far left and 6 is the column on the far right.
@@ -30,7 +30,10 @@ Click on the picture or the link: https://www.youtube.com/watch?v=l-hh51ncgDI&in
 Implement [
 Iterative deepening depth-first search](https://en.wikipedia.org/wiki/Iterative_deepening_depth-first_search) which keeps the time per move fixed and adjusts the depth of the minimax algorithm accordingly. <br>
 Create a opening move database (preprocess the computationally intensive first few moves).
+<br>
 
+## MORE INFORMATION:
+Please checkout the more in depth documentation on the project's [Wiki page](https://github.com/mathmerizing/Connect_Four/wiki "Wiki").
 
 
 <br><br><br>
