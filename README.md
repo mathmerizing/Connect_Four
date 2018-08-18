@@ -10,7 +10,7 @@ A Java version of the game "Connect Four". Learning about Minimax and Alpha-beta
   The user plays against a bot. <br>
   Currently supported:
   - bot playing random (possible) moves
-  - bot implementing minimax and alpha-beta pruning (recommended depth: 6)
+  - bot implementing minimax and alpha-beta pruning (recommended depth: 8 [plies](https://en.wikipedia.org/wiki/Ply_(game_theory)))
 
 ### MULTI PLAYER:
   User1 plays against User2 on the same PC.
@@ -24,6 +24,14 @@ A Java version of the game "Connect Four". Learning about Minimax and Alpha-beta
 
 [![https://www.youtube.com/watch?v=l-hh51ncgDI&index=3&t=0s&list=LL1ZTjVhPHvlgFev4ryx0suQ%2F0%2F](http://i3.ytimg.com/vi/l-hh51ncgDI/hqdefault.jpg)](https://www.youtube.com/watch?v=l-hh51ncgDI&index=3&t=0s&list=LL1ZTjVhPHvlgFev4ryx0suQ%2F0%2F) <br>
 Click on the picture or the link: https://www.youtube.com/watch?v=l-hh51ncgDI&index=3&t=0s&list=LL1ZTjVhPHvlgFev4ryx0suQ 
-<br><br><br><br><br>
+<br>
 
+## IDEAS FOR OPTIMIZATION:
+Implement [
+Iterative deepening depth-first search](https://en.wikipedia.org/wiki/Iterative_deepening_depth-first_search) which keeps the time per move fixed and adjusts the depth of the minimax algorithm accordingly. <br>
+Create a opening move database (preprocess the computationally intensive first few moves).
+
+
+
+<br><br><br>
 Other resources that we used: https://codereview.stackexchange.com/questions/82647/evaluation-function-for-connect-four

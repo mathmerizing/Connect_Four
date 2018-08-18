@@ -71,14 +71,14 @@ public class Main
         int i = 0;
         int j = 1;
 
-        if (isFirst.equals("n") || isFirst.equals("no"))
+        if (isFirst.toLowerCase().equals("n") || isFirst.toLowerCase().equals("no"))
         {
             i = 1;
             j = 0;
         }
 
         players[i] = new Human(name, -1, board);
-        players[j] = new Minimax(1, board, 6);
+        players[j] = new Minimax(1, board, 8);
 
         gameLoop(board, players);
     }
