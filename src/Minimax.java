@@ -2,7 +2,7 @@ public class Minimax
         extends Bot
 {
     private int depth;
-    private int leaveCount = 0;
+    //private int leafCount = 0;
 
     public Minimax(int playerNum, Board board, int depth) throws
             Exception
@@ -16,9 +16,9 @@ public class Minimax
     {
         try
         {
-            leaveCount = 0;
+            //leafCount = 0;
             board.nextMove(this.playerNum, this.minimaxMove(board, this.depth));
-            //System.err.println("      Number of leaves: " + leaveCount);
+            //System.err.println("      Number of leafs: " + leafCount);
         }
         catch (Exception e)
         {
@@ -55,7 +55,7 @@ public class Minimax
     {
         if (depth == 0 || board.getPossibleMoves().length == 0)
         {
-            leaveCount++;
+            //leafCount++;
             return evaluate(board, maximizingPlayer);
         }
 
