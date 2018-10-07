@@ -2,6 +2,9 @@
 *by Yerso Checya Sinti and Julian Roth* <br><br>
 A Java version of the game "Connect Four". Learning about Minimax and Alpha-beta pruning.
 
+## OUR CONNECT FOUR APP:
+<a href="https://play.google.com/store/apps/details?id=com.mathmerizing.connectfour"><img src="https://github.com/mathmerizing/Connect_Four/blob/master/documentation/app.jpg" width="300"></a>
+
 ## MODES:
 - single player
 - multi player
