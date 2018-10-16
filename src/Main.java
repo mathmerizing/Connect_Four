@@ -78,7 +78,7 @@ public class Main
         }
 
         players[i] = new Human(name, -1, board);
-        players[j] = new Minimax(1, board, 8);
+        players[j] = new Minimax(1, board, 10);
 
         gameLoop(board, players);
     }

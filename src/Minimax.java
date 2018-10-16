@@ -1,7 +1,12 @@
+import java.util.List;
+import java.util.ArrayList;
+
 public class Minimax
         extends Bot
 {
     private int depth;
+    private int maxLeafNodes;
+    private int oldPossibleMoves;
     //private int leafCount = 0;
 
     public Minimax(int playerNum, Board board, int depth) throws
@@ -9,6 +14,8 @@ public class Minimax
     {
         super(playerNum, board);
         this.depth = depth;
+        this.maxLeafNodes = (int)Math.pow(7,depth);
+        this.oldPossibleMoves = 7;
     }
 
     @Override
@@ -17,7 +24,7 @@ public class Minimax
         try
         {
             //leafCount = 0;
-            board.nextMove(this.playerNum, this.minimaxMove(board, this.depth));
+            board.nextMove(this.playerNum, this.minimaxMove(board));
             //System.err.println("      Number of leafs: " + leafCount);
         }
         catch (Exception e)
@@ -26,17 +33,42 @@ public class Minimax
         }
     }
 
-    private int minimaxMove(Board board, int depth) throws
+    private int minimaxMove(Board board) throws
             Exception
     {
+        if (board.getPossibleMoves().length < this.oldPossibleMoves) {
+            this.oldPossibleMoves = board.getPossibleMoves().length;
+            this.depth = Math.max(this.depth,(int)Math.floor((Math.log(this.maxLeafNodes))/(Math.log(this.oldPossibleMoves))));
+        }
+
+        List<Thread> threads = new ArrayList<Thread>();
+
         int[] evaluatedMoves = new int[board.getPossibleMoves().length];
         //System.err.println("      possible moves: " + evaluatedMoves.length);
         for (int i = 0; i < board.getPossibleMoves().length; i++)
         {
-            Board boardCopy = board.copy();
+            final Board boardCopy = board.copy();
             boardCopy.nextMove(1, board.getPossibleMoves()[i]);
-            evaluatedMoves[i] = minimax(boardCopy, depth - 1, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
+            
+            final int finalI = i;
+
+            threads.add(new Thread(()-> {
+                try {
+                    evaluatedMoves[finalI] = minimax(boardCopy, this.depth - 1, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }));
         }
+
+        for (Thread t : threads) {
+            t.start();
+        }
+
+        for (Thread t : threads) {
+            t.join();
+        }
+
         int pos = board.getPossibleMoves()[0];
         int biggestValue = Integer.MIN_VALUE;
         for (int i = 0; i < board.getPossibleMoves().length; i++)
