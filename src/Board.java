@@ -23,6 +23,7 @@ class Board
         availableTiles.push("O");
     }
 
+    @SuppressWarnings("unchecked")
     Board copy()
     {
         Board out = new Board();
@@ -143,6 +144,17 @@ class Board
         return this.boardState;
     }
 
+    int[] getBoardStateLinear()
+    {
+      int[] out = new int[42];
+      for (int i = 0;i < this.ROWS; i++) {
+        for (int j = 0; j < this.COLUMNS; j++) {
+          out[i*this.COLUMNS+j] = this.boardState[i][j];
+        }
+      }
+      return out;
+    }
+
     private void setBoardState(Board in)
     {
         for (int i = 0; i < in.ROWS; i++)
@@ -190,8 +202,6 @@ class Board
             s.append("\n");
             horizontalLine(s);
         }
-
-        System.out.println(this.moveList);
         return s.toString();
     }
 
@@ -203,7 +213,7 @@ class Board
 
     String popTile()
     {
-        return (String) this.availableTiles.pop();
+        return this.availableTiles.pop();
     }
 
 
@@ -218,4 +228,24 @@ class Board
     }
 
     int getMoves() { return this.moves; }
+
+    public static void replay(String player1, String player2, ArrayList<Pair> moveList) throws Exception
+    {
+      Board b = new Board();
+      b.setHashMap(1,"X");
+      b.setHashMap(-1,"O");
+      while (!moveList.isEmpty())
+      {
+        System.out.println(player1 + "'s move:");
+        b.nextMove(1,moveList.remove(0).getSecond());
+        System.out.println(b);
+
+        if (!moveList.isEmpty())
+        {
+          System.out.println(player2 + "'s move:");
+          b.nextMove(-1,moveList.remove(0).getSecond());
+          System.out.println(b);
+        }
+      }
+    }
 }
