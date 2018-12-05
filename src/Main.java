@@ -3,9 +3,8 @@ import java.util.Scanner;
 
 public class Main
 {
-
     private static boolean gameOver = false;
-
+    
     /**
      * Main method <br>
      * Choose between single- and multi player.

@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Stack;
 import java.util.stream.IntStream;
@@ -10,8 +11,10 @@ class Board
     private final int COLUMNS = 7;
     private final int EMPTY_COLOR = 0;
     private int[][] boardState = new int[ROWS][COLUMNS];
-    private Stack availableTiles = new Stack();
-    private HashMap tiles = new HashMap(2);
+    private Stack<String> availableTiles = new Stack<>();
+    private HashMap<Integer,String> tiles = new HashMap<>(2);
+    private int moves = 0;
+    List<Pair> moveList = new ArrayList<>();
 
     Board()
     {
@@ -108,6 +111,7 @@ class Board
             if (this.boardState[i][column] == this.getEmptyColor())
             {
                 this.boardState[i][column] = playerNum;
+                this.moveList.add(new Pair(i,column));
                 break;
             }
         }
@@ -187,7 +191,7 @@ class Board
             horizontalLine(s);
         }
 
-
+        System.out.println(this.moveList);
         return s.toString();
     }
 
@@ -212,4 +216,6 @@ class Board
     {
         return this.EMPTY_COLOR;
     }
+
+    int getMoves() { return this.moves; }
 }
