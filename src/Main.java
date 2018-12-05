@@ -3,38 +3,38 @@ import java.util.Scanner;
 
 public class Main
 {
-    private static boolean gameOver = false;
-    
-    /**
-     * Main method <br>
-     * Choose between single- and multi player.
-     *
-     * @param args "-single" for singlePlayer mode and "-multi" for multiPlayer mode
-     */
-    public static void main(String[] args) throws
-            Exception
-    {
+private static boolean gameOver = false;
+
+/**
+ * Main method <br>
+ * Choose between single- and multi player.
+ *
+ * @param args "-single" for singlePlayer mode and "-multi" for multiPlayer mode
+ */
+public static void main(String[] args) throws
+Exception
+{
         if (args.length != 0)
         {
-            switch (args[0])
-            {
+                switch (args[0])
+                {
                 case "-single":
-                    singlePlayer();
-                    break;
+                        singlePlayer();
+                        break;
                 case "-multi":
-                    multiPlayer();
-                    break;
-            }
+                        multiPlayer();
+                        break;
+                }
         }
         else
         {
-            singlePlayer();
+                singlePlayer();
         }
-    }
+}
 
-    private static void multiPlayer() throws
-            Exception
-    {
+private static void multiPlayer() throws
+Exception
+{
         Board board = new Board();
         Player[] players = new Player[2];
 
@@ -50,12 +50,12 @@ public class Main
         players[1] = new Human(secondPlayer, 2, board);
 
         gameLoop(board, players);
-    }
+}
 
 
-    private static void singlePlayer() throws
-            Exception
-    {
+private static void singlePlayer() throws
+Exception
+{
         Board board = new Board();
         Player[] players = new Player[2];
 
@@ -72,52 +72,52 @@ public class Main
 
         if (isFirst.toLowerCase().equals("n") || isFirst.toLowerCase().equals("no"))
         {
-            i = 1;
-            j = 0;
+                i = 1;
+                j = 0;
         }
 
         players[i] = new Human(name, -1, board);
         players[j] = new Minimax(1, board, 10);
 
         gameLoop(board, players);
-    }
+}
 
-    private static void gameLoop(Board board, Player[] players)
-    {
+private static void gameLoop(Board board, Player[] players)
+{
         while (!gameOver)
         {
-            for (Player player : players)
-            {
-                if (!gameOver)
+                for (Player player : players)
                 {
-                    //long startTime = System.currentTimeMillis();
-                    player.move(board);
-                    //long endTime = System.currentTimeMillis();
-                    //System.err.println("      INFO ::: " + player.getName() + "'s move took " + (0.0 + endTime -
-                    //        startTime) / 1000 + " seconds.");
+                        if (!gameOver)
+                        {
+                                //long startTime = System.currentTimeMillis();
+                                player.move(board);
+                                //long endTime = System.currentTimeMillis();
+                                //System.err.println("      INFO ::: " + player.getName() + "'s move took " + (0.0 + endTime -
+                                //        startTime) / 1000 + " seconds.");
 
-                    System.out.println(player.getName() + "'s move:\n" + board);
+                                System.out.println(player.getName() + "'s move:\n" + board);
 
-                    gameOver = checkGameOver(board, player);
+                                gameOver = checkGameOver(board, player);
+                        }
                 }
-            }
         }
-    }
+}
 
-    private static boolean checkGameOver(Board board, Player player)
-    {
+private static boolean checkGameOver(Board board, Player player)
+{
         if (board.isGameOver())
         {
-            System.out.println(player.getName() + " W0N!");
-            return true;
+                System.out.println(player.getName() + " W0N!");
+                return true;
         }
         else if (board.getPossibleMoves().length == 0)
         {
-            System.out.println("IT`S A TIE!");
-            return true;
+                System.out.println("IT`S A TIE!");
+                return true;
         }
         return false;
-    }
+}
 
 
 }
