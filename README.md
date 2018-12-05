@@ -1,9 +1,9 @@
-# Connect-Four
+# Four In A Row
 *by Yerso Checya Sinti and Julian Roth* <br><br>
-A Java version of the game "Connect Four". Learning about Minimax and Alpha-beta pruning.
+A Java version of the game "Four In A Row". Learning about Minimax and Alpha-beta pruning.
 
-## OUR CONNECT FOUR APP:
-<a href="https://play.google.com/store/apps/details?id=com.mathmerizing.connectfour"><img src="https://github.com/mathmerizing/Connect_Four/blob/master/documentation/app.jpg" width="300"></a>
+## OUR FOUR IN A ROW APP:
+<a href="https://play.google.com/store/apps/details?id=com.mathmerizing.fourinarow"><img src="https://github.com/mathmerizing/Four_In_A_Row/blob/master/documentation/Main_Menu.jpg" width="300"></a>
 
 ## MODES:
 - single player
@@ -36,7 +36,7 @@ Create a opening move database (preprocess the computationally intensive first f
 <br>
 
 ## MORE INFORMATION:
-Please checkout the more in depth documentation on the project's [Wiki page](https://github.com/mathmerizing/Connect_Four/wiki "Wiki").
+Please checkout the more in depth documentation on the project's [Wiki page](https://github.com/mathmerizing/Four_In_A_Row/wiki "Wiki").
 
 
 <br><br><br>
