@@ -15,6 +15,7 @@ private Stack<String> availableTiles = new Stack<>();
 private HashMap<Integer,String> tiles = new HashMap<>(2);
 private int moves = 0;
 List<Pair> moveList = new ArrayList<>();
+private int winner;
 
 Board()
 {
@@ -45,6 +46,7 @@ boolean isGameOver()
                             this.boardState[i][j + 2] == this.boardState[i][j + 3] &&
                             this.boardState[i][j] != this.getEmptyColor())
                         {
+                                winner = this.boardState[i][j];
                                 return true;
                         }
                 }
@@ -60,6 +62,7 @@ boolean isGameOver()
                             this.boardState[i + 2][j] == this.boardState[i + 3][j] &&
                             this.boardState[i][j] != this.getEmptyColor())
                         {
+                                winner = this.boardState[i][j];
                                 return true;
                         }
                 }
@@ -75,6 +78,7 @@ boolean isGameOver()
                             this.boardState[i + 2][j + 2] == this.boardState[i + 3][j + 3] &&
                             this.boardState[i][j] != this.getEmptyColor())
                         {
+                                winner = this.boardState[i][j];
                                 return true;
                         }
                 }
@@ -90,6 +94,7 @@ boolean isGameOver()
                             this.boardState[i - 2][j + 2] == this.boardState[i - 3][j + 3] &&
                             this.boardState[i][j] != this.getEmptyColor())
                         {
+                                winner = this.boardState[i][j];
                                 return true;
                         }
                 }
@@ -106,6 +111,8 @@ Exception
         {
                 throw new Exception("ILLEGAL MOVE! Column " + column + " is not a possible move.");
         }
+
+        this.moves++;
 
         for (int i = ROWS - 1; i > -1; i--)
         {
@@ -138,13 +145,24 @@ int[] getPossibleMoves()
         return moves.stream().mapToInt(i->i).toArray();
 }
 
+Matrix getPossibleMovesVector()
+{
+  // Matrix contains a "1" if the move is possible, a "0" if it isn't
+  Matrix vector = new Matrix(COLUMNS,1,false);
+  for (int num : this.getPossibleMoves())
+  {
+    vector.setEntry(num,0,1);
+  }
+  return vector;
+}
+
 
 int[][] getBoardState()
 {
         return this.boardState;
 }
 
-int[] getBoardStateLinear()
+Matrix getBoardStateLinear()
 {
         int[] out = new int[42];
         for (int i = 0; i < this.ROWS; i++) {
@@ -152,7 +170,7 @@ int[] getBoardStateLinear()
                         out[i*this.COLUMNS+j] = this.boardState[i][j];
                 }
         }
-        return out;
+        return new Matrix(out);
 }
 
 private void setBoardState(Board in)
@@ -249,5 +267,17 @@ public static void replay(String player1, String player2, ArrayList<Pair> moveLi
                         System.out.println(b);
                 }
         }
+}
+
+public int getWinner() { return this.winner; }
+
+public int calculateScore() {
+  if (this.winner == 1) {
+    return moves;
+  } else if (this.winner == -1) {
+    return 150 - moves;
+  } else {
+    return 75;
+  }
 }
 }

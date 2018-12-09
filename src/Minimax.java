@@ -181,7 +181,7 @@ private boolean isValidColorPosition(Board board, int row, int col, int color)
                && board.getBoardState()[row][col] == color;
 }
 
-private int getLength(Board board, IntegerPair position, IntegerPair directions, int currentColor, boolean[][]
+private int getLength(Board board, Pair position, Pair directions, int currentColor, boolean[][]
                       visited, int count)
 {
         int row = position.getFirst() + count * directions.getFirst();
@@ -198,32 +198,32 @@ private int getLength(Board board, IntegerPair position, IntegerPair directions,
 
 
 
-private IntegerPair getLengthPair(Board board, IntegerPair last, IntegerPair direction, int playerColor,
+private Pair getLengthPair(Board board, Pair last, Pair direction, int playerColor,
                                   boolean[][] visited)
 {
 
-        IntegerPair position = new IntegerPair(last.getFirst() + direction.getFirst(),
+        Pair position = new Pair(last.getFirst() + direction.getFirst(),
                                                last.getSecond() + direction.getSecond());
 
         int playerLength = getLength(board, position, direction, playerColor, visited, 0);
 
         int possibleLength = getLength(board, position, direction, board.getEmptyColor(), visited, playerLength);
 
-        return new IntegerPair(playerLength, possibleLength);
+        return new Pair(playerLength, possibleLength);
 }
 
-private int getStrength(Board board, IntegerPair last, int color, boolean[][] visited, int[][] directions)
+private int getStrength(Board board, Pair last, int color, boolean[][] visited, int[][] directions)
 {
 
         int strength = 0;
 
         for (int i = 0; i < 4; ++i)
         {
-                IntegerPair direction = new IntegerPair(directions[0][i], directions[1][i]);
-                IntegerPair a = getLengthPair(board, last, direction, color, visited);
+                Pair direction = new Pair(directions[0][i], directions[1][i]);
+                Pair a = getLengthPair(board, last, direction, color, visited);
 
-                direction = new IntegerPair(-directions[0][i], -directions[1][i]);
-                IntegerPair b = getLengthPair(board, last, direction, color, visited);
+                direction = new Pair(-directions[0][i], -directions[1][i]);
+                Pair b = getLengthPair(board, last, direction, color, visited);
 
                 if (a.getSecond() + b.getSecond() >= 3)
                 {
@@ -249,7 +249,7 @@ private int connectedStrength(Board board)
                         int color = board.getBoardState()[row][col];
                         if (color != board.getEmptyColor())
                         {
-                                total += getStrength(board, new IntegerPair(row, col), color, visited, s);
+                                total += getStrength(board, new Pair(row, col), color, visited, s);
                         }
                         visited[row][col] = true;
                 }

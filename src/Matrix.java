@@ -25,6 +25,33 @@ public Matrix(int[] array)
         for (int i = 0; i < array.length; i++) { this.content[i][0] = array[i]; }
 }
 
+public Matrix(int[][] array)
+{
+        this.rows = array.length;
+        this.columns = array[0].length;
+        this.content = new double[this.rows][this.columns];
+        for (int i = 0; i < array.length; i++)
+        {
+          for (int j = 0; j < array.length; j++)
+          {
+            this.content[i][j] = array[i][j];
+          }
+        }
+}
+
+public static Matrix add(Matrix A, Matrix B)
+{
+  Matrix out = new Matrix(A.rows,A.columns,false);
+  for (int i = 0; i < A.rows; i++)
+  {
+    for (int j = 0; j < A.columns; j++)
+    {
+      out.content[i][j] = A.content[i][j] + B.content[i][j];
+    }
+  }
+  return out;
+}
+
 public static Matrix multiply(Matrix A, Matrix B)
 {
         Matrix M = new Matrix(A.rows, B.columns,false);
@@ -39,6 +66,39 @@ public static Matrix multiply(Matrix A, Matrix B)
                 }
         }
         return M;
+}
+
+public static Matrix componentMultiply(Matrix A, Matrix B)
+{
+  Matrix out = new Matrix(A.rows,A.columns,false);
+  for (int i = 0; i < A.rows; i++)
+  {
+    for (int j = 0; j < A.columns; j++)
+    {
+      out.content[i][j] = A.content[i][j]*B.content[i][j];
+    }
+  }
+  return out;
+}
+
+public void setEntry(int row, int col, double val)
+{
+  this.content[row][col] = val;
+}
+
+public static int argmax(Matrix M)
+{
+  double highest = Integer.MIN_VALUE;
+  int index = 0;
+  for (int i = 0; i < M.rows; i ++)
+  {
+      if (M.content[i][0] > highest)
+      {
+        highest = M.content[i][0];
+        index =  i;
+      }
+  }
+  return index;
 }
 
 public void sigmoid()
@@ -69,6 +129,7 @@ public String toString()
         s.append(this.rows).append("X").append(this.columns);
         return s.toString();
 }
+
 
 
 }
