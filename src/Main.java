@@ -77,7 +77,7 @@ Exception
         }
 
         players[i] = new Human(name, -1, board);
-        players[j] = new Minimax(1, board, 10);
+        players[j] = new Minimax(1, board, 2);
 
         gameLoop(board, players);
 }

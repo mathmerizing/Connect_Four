@@ -109,7 +109,7 @@ Exception
 {
         if (!IntStream.of(this.getPossibleMoves()).anyMatch(x->x == column))
         {
-                throw new Exception("ILLEGAL MOVE! Column " + column + " is not a possible move.");
+                throw new Exception("ILLEGAL MOVE! Column " + column + " is not a possible move. Possible moves: \n" + this.getPossibleMovesVector());
         }
 
         this.moves++;
@@ -234,6 +234,10 @@ String popTile()
         return this.availableTiles.pop();
 }
 
+public Stack<String> getAvailableTiles()
+{
+  return this.availableTiles;
+}
 
 void setHashMap(int playerNum, String tileType)
 {
@@ -249,7 +253,7 @@ int getMoves() {
         return this.moves;
 }
 
-public static void replay(String player1, String player2, ArrayList<Pair> moveList) throws Exception
+public static void replay(String player1, String player2, List<Pair> moveList) throws Exception
 {
         Board b = new Board();
         b.setHashMap(1,"X");
@@ -280,4 +284,10 @@ public int calculateScore() {
     return 75;
   }
 }
+
+public List<Pair> getMoveList()
+{
+  return this.moveList;
+}
+
 }

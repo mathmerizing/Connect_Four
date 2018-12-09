@@ -26,5 +26,15 @@ abstract class Player
         return this.name;
     }
 
+    public void setTileType(String type)
+    {
+      this.tileType = type;
+    }
+
+    public String getTileType()
+    {
+      return this.tileType;
+    }
+
 
 }

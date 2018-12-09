@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Minimax
         extends Bot
@@ -36,6 +37,24 @@ public void move(Board board)
 private int minimaxMove(Board board) throws
 Exception
 {
+          //special move (random.choice[2,3,4]), if this.depth == 2 (1 move ahead == 2 plies) AND board.moves <= 3
+          //System.out.println("DEPTH= " + this.depth + " BOARD MOVES= " + board.getMoves());
+          if (this.depth == 2 && board.getMoves() <= 3) {
+              int[] choices = new int[]{2,3,4};
+              return choices[new Random().nextInt(choices.length)];
+          }
+
+          if (this.depth == 2) {
+              if (new Random().nextInt(4) == 0) {
+                  return board.getPossibleMoves()[new Random().nextInt(board.getPossibleMoves().length)];
+              }
+          } else if (this.depth == 4) {
+              if (new Random().nextInt(9) == 0) {
+                  return board.getPossibleMoves()[new Random().nextInt(board.getPossibleMoves().length)];
+              }
+          }
+
+
         if (board.getPossibleMoves().length < this.oldPossibleMoves) {
                 this.oldPossibleMoves = board.getPossibleMoves().length;
                 this.depth = Math.max(this.depth,(int)Math.floor((Math.log(this.maxLeafNodes))/(Math.log(this.oldPossibleMoves))));

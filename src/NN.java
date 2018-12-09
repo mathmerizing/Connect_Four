@@ -1,15 +1,17 @@
 import java.util.Random;
+import java.util.List;
+import java.util.ArrayList;
 
 public class NN extends Player {
-private int[] neurons;
+private int[] neurons = new int[] {42, 7};
 private Matrix[] weights;
 private Matrix[] biases;
 private Board board;
 private int fitness = 0;
+private List<Board> archivedBoards = new ArrayList<>();
 
 public NN(int playerNum, Board board) throws Exception {
         super("NN_" + String.valueOf((new Random()).nextInt()), playerNum, board);
-        this.neurons = new int[] {42, 7};
         this.setNN(true);
         this.board = board;
 }
@@ -59,9 +61,30 @@ public Matrix forwardProp() {
         return output;
 }
 
+public NN mutatedCopy(double mutation) throws Exception
+{
+  // TO DO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  NN out = new NN(-1,new Board());
+  out.neurons = this.neurons.clone();
+  for (int i = 0; i < this.weights.length; i++)
+  {
+    out.weights[i] = this.weights[i].mutatedCopy(mutation);
+    out.biases[i] = this.biases[i].mutatedCopy(mutation);
+  }
+  return out;
+}
+
+public void archiveBoard()
+{
+  this.archivedBoards.add(this.board);
+  this.board = new Board();
+  this.setTileType(this.board.popTile());
+  this.board.setHashMap(this.playerNum, this.getTileType());
+}
+
 public Board getBoard() { return this.board; }
 
-public void setFitness(int val) { this.fitness = val; }
+public void increaseFitness(int val) { this.fitness += val; }
 public int getFitness() { return this.fitness; }
 
 

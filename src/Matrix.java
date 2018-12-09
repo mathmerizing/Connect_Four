@@ -101,6 +101,20 @@ public static int argmax(Matrix M)
   return index;
 }
 
+public Matrix mutatedCopy(double mutation)
+{
+    Matrix out = new Matrix(this.rows, this.columns, false);
+    Random generator = new Random();
+    for (int i = 0; i < this.rows; i++)
+    {
+      for (int j = 0; j < this.columns; j++)
+      {
+        out.content[i][j] = ((mutation > generator.nextDouble()) ? generator.nextGaussian() : this.content[i][j]);
+      }
+    }
+    return out;
+}
+
 public void sigmoid()
 {
         for (int i = 0; i < this.rows; i++)
