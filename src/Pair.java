@@ -1,6 +1,7 @@
 public class Pair {
     private int first;
     private int second;
+    private static final long serialVersionUID = 1L;
 
     public Pair(int first, int second) {
         this.first = first;

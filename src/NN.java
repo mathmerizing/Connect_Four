@@ -1,8 +1,12 @@
 import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 
-public class NN extends Player {
+public class NN extends Player{
 private int[] neurons = new int[] {42, 7};
 private Matrix[] weights;
 private Matrix[] biases;
@@ -63,7 +67,6 @@ public Matrix forwardProp() {
 
 public NN mutatedCopy(double mutation) throws Exception
 {
-  // TO DO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   NN out = new NN(-1,new Board());
   out.neurons = this.neurons.clone();
   for (int i = 0; i < this.weights.length; i++)
@@ -80,6 +83,36 @@ public void archiveBoard()
   this.board = new Board();
   this.setTileType(this.board.popTile());
   this.board.setHashMap(this.playerNum, this.getTileType());
+}
+
+public void save(File fileAddress)
+{
+  String json = "TEST \n Just checking \n Finally FileWriter is cooperating.";
+  try {
+    FileWriter writer = new FileWriter(fileAddress);
+    writer.write(json);
+    writer.close();
+  } catch (Exception e) {
+    e.printStackTrace();
+  }
+}
+
+public static NN load(File fileAddress) throws Exception
+{
+  NN obj = null;
+  String line;
+  String out = "";
+  try {
+    BufferedReader br = new BufferedReader(new FileReader(fileAddress));
+    while ((line = br.readLine()) != null)
+    {
+        out += line;
+    }
+    System.out.println(out);
+  } catch (Exception e) {
+    e.printStackTrace();
+  }
+  return obj;
 }
 
 public Board getBoard() { return this.board; }
