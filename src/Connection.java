@@ -1,21 +1,21 @@
 import java.util.Random;
 
 public class Connection {
-  private Node inNode = null;
-  private Node outNode = null;
+  private Node fromNode = null;
+  private Node toNode = null;
   private double weight = 0.0;
   private boolean isExpressed = true;
   private int innovationNumber = 0;
 
-  public Connection(Node in, Node out, boolean randomWeight, boolean expressed, int innovation)
+  public Connection(Node from, Node to, boolean randomWeight, boolean expressed, int innovation)
   {
-      this(in,out,new Random().nextGaussian(),expressed,innovation);
+      this(from,to,new Random().nextGaussian(),expressed,innovation);
   }
 
-  public Connection(Node in, Node out, double w, boolean expressed, int innovation)
+  public Connection(Node from, Node to, double w, boolean expressed, int innovation)
   {
-    this.inNode = in;
-    this.outNode = out;
+    this.fromNode = from;
+    this.toNode = to;
     this.weight = w;
     this.isExpressed = expressed;
     this.innovationNumber = innovation;
@@ -26,9 +26,9 @@ public class Connection {
     this.weight += mutationFactor*(new Random().nextGaussian());
   }
 
-  public Node getInNode() { return this.inNode; }
+  public Node getFromNode() { return this.fromNode; }
 
-  public Node getOutNode() { return this.outNode; }
+  public Node getToNode() { return this.toNode; }
 
   public double getWeight() { return this.weight; }
 

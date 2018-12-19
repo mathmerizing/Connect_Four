@@ -52,6 +52,19 @@ public static Matrix add(Matrix A, Matrix B)
   return out;
 }
 
+public static Matrix scalarMultiply(double scalar, Matrix A)
+{
+  Matrix out = new Matrix(A.rows,A.columns,false);
+  for (int i = 0; i < A.rows; i++)
+  {
+    for (int j = 0; j < A.columns; j++)
+    {
+      out.content[i][j] = A.content[i][j]*scalar;
+    }
+  }
+  return out;
+}
+
 public static Matrix multiply(Matrix A, Matrix B)
 {
         Matrix M = new Matrix(A.rows, B.columns,false);
@@ -81,10 +94,27 @@ public static Matrix componentMultiply(Matrix A, Matrix B)
   return out;
 }
 
+public double getEntry(int row)
+{
+  return getEntry(row,0);
+}
+
+public double getEntry(int row, int col)
+{
+  return this.content[row][col];
+}
+
+public void setEntry(int row, double val)
+{
+  setEntry(row,0,val);
+}
+
 public void setEntry(int row, int col, double val)
 {
   this.content[row][col] = val;
 }
+
+public int getRows() { return this.rows; }
 
 public static int argmax(Matrix M)
 {

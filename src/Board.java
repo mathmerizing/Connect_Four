@@ -275,16 +275,6 @@ public static void replay(String player1, String player2, List<Pair> moveList) t
 
 public int getWinner() { return this.winner; }
 
-public int calculateScore() {
-  if (this.winner == 1) {
-    return moves;
-  } else if (this.winner == -1) {
-    return 150 - moves;
-  } else {
-    return 75;
-  }
-}
-
 public List<Pair> getMoveList()
 {
   return this.moveList;
