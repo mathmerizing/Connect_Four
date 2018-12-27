@@ -3,6 +3,8 @@ public class Train {
   public static void main(String[] args) throws
   Exception
   {
+    Genome test = new Genome(-1);
+    Genome copy = new Genome(test);
     int size = 500;
     Population population = new Population(size);
     long startTime = System.currentTimeMillis();

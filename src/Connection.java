@@ -34,6 +34,8 @@ public class Connection {
 
   public int getInnovationNumber() { return this.innovationNumber; }
 
+  public boolean getIsExpressed() { return this.isExpressed; }
+
   public void disable() { this.isExpressed = false; }
 
   public void switchIsExpressed() { this.isExpressed = !this.isExpressed; }

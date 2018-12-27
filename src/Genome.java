@@ -1,8 +1,10 @@
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.Stack;
+import java.util.Collections;
 
 public class Genome extends Player {
   private HashMap<Integer,Node> nodeGenes = new HashMap<>();
@@ -15,13 +17,22 @@ public class Genome extends Player {
 
   private final int maxNodes = 200;
 
+  private final double mu = 1.0;
+  private final double lambda = 3.0;
+
   private Board board;
 
   private int fitness = 0;
   private boolean illegalMove = false;
 
 
-  public Genome(int playerNum, Board board) throws Exception
+  public Genome(int playerNum) throws Exception //--------------------------------------------------------------
+  {
+    this(playerNum,new Board());
+  }
+
+
+  public Genome(int playerNum, Board board) throws Exception //-------------------------------------------------
   {
     super("Genome_" +  String.valueOf((new Random()).nextInt()), playerNum, board);
 
@@ -65,18 +76,117 @@ public class Genome extends Player {
 
   }
 
-  public void mutateEnableDisableConnection(Connection connection)
+  //copy constructor
+  public Genome(Genome other) throws Exception //----------------------------------------------
+  {
+    super(other.getName(),other.getPlayerNum(),new Board());
+
+    this.board = new Board();
+    this.nodeCount = other.nodeCount;
+    this.innovationNumber = other.innovationNumber;
+
+    // deep copy of other.nodeGenes saved to this.nodeGenes
+    for (Map.Entry<Integer, Node> entry : other.nodeGenes.entrySet())
+    {
+        this.nodeGenes.put(entry.getKey(),new Node(entry.getValue()));
+    }
+
+    // deep copy of other.conncetion saved to this.connectionGenes
+    for (Connection c : other.connectionGenes)
+    {
+      this.connectionGenes.add(
+            new Connection( this.nodeGenes.get(c.getFromNode().getNumber()),
+                            this.nodeGenes.get(c.getToNode().getNumber()),
+                            c.getWeight(), c.getIsExpressed(), c.getInnovationNumber() ) );
+    }
+
+    //set in- and outgoing connections of the nodes
+    for (Node n : this.nodeGenes.values())
+    {
+        n.calculateInOutGoing(this.connectionGenes);
+    }
+
+  }
+
+  public void crossover(Genome other) throws Exception //-------------------------------------------
+  {
+    Genome offspring; // needs to be created though both parents
+    Genome strongerParent;
+    Genome weakerParent;
+    int highestInnovation; // highest Innovation Number of the stronger parent
+    int matchingGenes = this.numOfMatchingGenes(other);
+    if (this.fitness > other.fitness || (this.fitness == other.fitness && new Random().nextInt(2) == 0) )
+    {
+      strongerParent = this;
+      weakerParent = other;
+    } else {
+      strongerParent = other;
+      weakerParent = this;
+    }
+    offspring = new Genome(strongerParent);
+    highestInnovation = strongerParent.connectionGenes.get(this.connectionGenes.size()-1).getInnovationNumber();
+
+    for (int i = matchingGenes; weakerParent.connectionGenes.get(i).getInnovationNumber() <= highestInnovation; i++)
+    {
+      boolean inStrongerParent = false;
+      int checkInnovation = weakerParent.connectionGenes.get(i).getInnovationNumber();
+      for (int j = matchingGenes; j < strongerParent.connectionGenes.size(); j++)
+      {
+        if (strongerParent.connectionGenes.get(j).getInnovationNumber() == checkInnovation)
+        {
+          inStrongerParent = true;
+          break;
+        }
+      }
+      if (!inStrongerParent)
+      {
+        Connection weakConnection = weakerParent.connectionGenes.get(i);
+        // get fromNode and toNode of this connection
+        int fromNum = weakConnection.getFromNode().getNumber();
+        int toNum = weakConnection.getToNode().getNumber();
+
+        //getFromNode
+        Node from;
+        if (offspring.nodeGenes.get(fromNum) != null)
+        {
+          from = offspring.nodeGenes.get(fromNum);
+        } else {
+          from = new Node("hidden",fromNum);
+          offspring.nodeGenes.put(fromNum,from);
+        }
+
+        //getToNode
+        Node to;
+        if (offspring.nodeGenes.get(toNum) != null)
+        {
+          to = offspring.nodeGenes.get(toNum);
+        } else {
+          to = new Node("hidden",toNum);
+          offspring.nodeGenes.put(toNum,to);
+        }
+
+        Connection clonedConnection = new Connection(from,to,weakConnection.getWeight(),weakConnection.getIsExpressed(),checkInnovation);
+        offspring.connectionGenes.add(clonedConnection);
+      }
+    }
+    Collections.sort(offspring.connectionGenes, (a,b) -> a.getInnovationNumber() - b.getInnovationNumber());
+
+  }
+
+
+
+  public void mutateEnableDisableConnection(Connection connection) //--------------------------------------------
   {
     connection.switchIsExpressed();
   }
 
-  public void mutateConnection(Connection connection, double mutationFactor)
+  public void mutateConnection(Connection connection, double mutationFactor) //----------------------------------
   {
     connection.mutateWeight(mutationFactor);
   }
 
   //check if it creates a cycle !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  public void mutateAddConnection(int from, int to)
+  public void mutateAddConnection(int from, int to) //------------------------------------------------------------
   {
       Node start = this.nodeGenes.get(from);
       Node end = this.nodeGenes.get(to);
@@ -84,7 +194,7 @@ public class Genome extends Player {
       mutateAddConnection(start, end);
   }
 
-  public void mutateAddConnection(Node start, Node end)
+  public void mutateAddConnection(Node start, Node end) //-------------------------------------------------------
   {
       Connection newConnection = new Connection(start,end,true,true,innovationUp());
       this.connectionGenes.add(newConnection);
@@ -92,7 +202,7 @@ public class Genome extends Player {
       end.addInGoing(newConnection);
   }
 
-  public void mutateAddNode(Connection oldConnection)
+  public void mutateAddNode(Connection oldConnection) //-----------------------------------------------------------
   {
     if (this.nodeGenes.size() == this.maxNodes) { return; }
     Node from = oldConnection.getFromNode();
@@ -106,9 +216,9 @@ public class Genome extends Player {
                                             true,oldConnection.getInnovationNumber()));
   }
 
-  public int innovationUp() { this.innovationNumber++; return this.innovationNumber; }
+  public int innovationUp() { this.innovationNumber++; return this.innovationNumber; } //--------------------
 
-  private void unvisitAllNodes()
+  private void unvisitAllNodes() //-------------------------------------------------------------------------
   {
     for (Node n: this.nodeGenes.values())
     {
@@ -116,7 +226,7 @@ public class Genome extends Player {
     }
   }
 
-  private void resetAllValueCalculated()
+  private void resetAllValueCalculated() //----------------------------------------------------------------
   {
     for (Node n: this.nodeGenes.values())
     {
@@ -125,7 +235,7 @@ public class Genome extends Player {
     }
   }
 
-  public boolean createsCycle(Node start,Node end) {
+  public boolean createsCycle(Node start,Node end) { //-----------------------------------------------------
     unvisitAllNodes();
     Stack<Node> stack = new Stack<>();
     stack.push(start);
@@ -143,7 +253,7 @@ public class Genome extends Player {
   }
 
 
-  public void setInput()
+  public void setInput() //------------------------------------------------------------------------------
   {
     // playerNum should be 1 or -1, hence the Matrix is being converted such that
     // the entry 1 stands for this genome and the entry -1 stands for its opponent
@@ -155,7 +265,7 @@ public class Genome extends Player {
     }
   }
 
-  public Matrix getOutput()
+  public Matrix getOutput() //----------------------------------------------------------------------------
   {
     Matrix out = new Matrix(this.outNodes,1,false);
     for (int i = 1; i <= this.outNodes; i++)
@@ -172,7 +282,7 @@ public class Genome extends Player {
   }
 
     @Override
-    public void move(Board board)
+    public void move(Board board) //-------------------------------------------------------------
     {
       setInput();
       try {
@@ -185,13 +295,13 @@ public class Genome extends Player {
       }
     }
 
-    public boolean getIllegalMove() { return this.illegalMove; }
-    public void resetIllegalMove() { this.illegalMove = false; }
+    public boolean getIllegalMove() { return this.illegalMove; } //----------------------------------------
+    public void resetIllegalMove() { this.illegalMove = false; } //----------------------------------------
 
-    public Board getBoard() { return this.board; }
-    public int getFitness() { return this.fitness; }
+    public Board getBoard() { return this.board; } //------------------------------------------------------
+    public int getFitness() { return this.fitness; } //----------------------------------------------------
 
-    public void calculateFitness()
+    public void calculateFitness() //----------------------------------------------------------------------
     {
       if (this.illegalMove == true) {
         this.fitness = -100 + this.board.getMoves();
@@ -203,5 +313,38 @@ public class Genome extends Player {
         this.fitness = 75;
       }
     }
+
+    public int numOfMatchingGenes(Genome other) //---------------------------------------------------------
+    {
+      int num = 0;
+      for (int i = 0; i < this.connectionGenes.size(); i++)
+      {
+        if (this.connectionGenes.get(i).getInnovationNumber() != other.connectionGenes.get(i).getInnovationNumber())
+        {
+          break;
+        }
+        num++;
+      }
+      return num;
+    }
+
+    public double compatibilityDistance(Genome other)
+    {
+      int matchingGenes = this.numOfMatchingGenes(other);
+      int numGenes1 = this.connectionGenes.size();
+      int numGenes2 = other.connectionGenes.size();
+      int N = Math.max(numGenes1,numGenes2);
+
+      double delta = (mu / (N + 0.0)) * (numGenes1+numGenes2-2*matchingGenes);
+      double weightDiff = 0.0;
+      for (int i = 0; i < matchingGenes; i++)
+      {
+        weightDiff += Math.abs(this.connectionGenes.get(i).getWeight() - other.connectionGenes.get(i).getWeight());
+      }
+      delta += lambda * ( weightDiff / (matchingGenes + 0.0));
+      return delta;
+    }
+
+
 
 }

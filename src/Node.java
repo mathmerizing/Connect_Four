@@ -18,6 +18,27 @@ public class Node {
     this.number = number;
   }
 
+  public Node(Node other)
+  {
+    this.type = other.type;
+    this.number = other.number;
+    this.value = other.value;
+  }
+
+  public void calculateInOutGoing(List<Connection> connections)
+  {
+    for (Connection c : connections)
+    {
+      if (c.getFromNode().getNumber() == this.getNumber())
+      {
+        this.addOutGoing(c);
+      } else if (c.getToNode().getNumber() == this.getNumber())
+      {
+        this.addInGoing(c);
+      }
+    }
+  }
+
   public int getNumber() { return this.number; }
 
   public void addInGoing(Connection c)

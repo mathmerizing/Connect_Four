@@ -21,9 +21,14 @@ abstract class Player
 
     public abstract void move(Board board);
 
-    String getName()
+    public String getName()
     {
         return this.name;
+    }
+
+    public int getPlayerNum()
+    {
+      return this.playerNum;
     }
 
     public void setTileType(String type)

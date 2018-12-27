@@ -14,7 +14,7 @@ public class Population {
     this.genomes = new Genome[size];
     for (int i = 0; i < size; i++)
     {
-      this.genomes[i] = new Genome(-1,new Board());
+      this.genomes[i] = new Genome(-1);
     }
   }
 
@@ -47,9 +47,7 @@ public class Population {
     List<Genome> sortedGenomes = Arrays.asList(this.genomes);
     Collections.sort(sortedGenomes, (a,b) -> b.getFitness() - a.getFitness());
     return sortedGenomes;
-
   }
-
 
   public int getSize() { return this.size; }
   public void setSize(int size) { this.size = size; }
