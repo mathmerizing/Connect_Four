@@ -125,4 +125,13 @@ public class Node {
     return out;
   }
 
+  @Override
+  public String toString() {
+          StringBuilder s = new StringBuilder();
+          s.append(this.type);
+          s.append("_");
+          s.append(this.number);
+          return s.toString();
+  }
+
 }

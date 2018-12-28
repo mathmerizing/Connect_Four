@@ -5,6 +5,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Stack;
 import java.util.Collections;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 
 public class Genome extends Player {
   private HashMap<Integer,Node> nodeGenes = new HashMap<>();
@@ -25,6 +29,11 @@ public class Genome extends Player {
   private int fitness = 0;
   private boolean illegalMove = false;
 
+  public Genome(String name, int playerNum, Board board) throws Exception
+  {
+    super(name,playerNum,board);
+    this.board = board;
+  }
 
   public Genome(int playerNum) throws Exception //--------------------------------------------------------------
   {
@@ -108,8 +117,10 @@ public class Genome extends Player {
 
   }
 
-  public void crossover(Genome other) throws Exception //-------------------------------------------
+  public Genome crossover(Genome other) throws Exception //-------------------------------------------
   {
+    if (this.nodeCount >= this.maxNodes) { return this; }
+
     Genome offspring; // needs to be created though both parents
     Genome strongerParent;
     Genome weakerParent;
@@ -153,6 +164,7 @@ public class Genome extends Player {
         } else {
           from = new Node("hidden",fromNum);
           offspring.nodeGenes.put(fromNum,from);
+          this.nodeCount++;
         }
 
         //getToNode
@@ -163,6 +175,7 @@ public class Genome extends Player {
         } else {
           to = new Node("hidden",toNum);
           offspring.nodeGenes.put(toNum,to);
+          this.nodeCount++;
         }
 
         Connection clonedConnection = new Connection(from,to,weakConnection.getWeight(),weakConnection.getIsExpressed(),checkInnovation);
@@ -170,7 +183,7 @@ public class Genome extends Player {
       }
     }
     Collections.sort(offspring.connectionGenes, (a,b) -> a.getInnovationNumber() - b.getInnovationNumber());
-
+    return offspring;
   }
 
 
@@ -204,7 +217,7 @@ public class Genome extends Player {
 
   public void mutateAddNode(Connection oldConnection) //-----------------------------------------------------------
   {
-    if (this.nodeGenes.size() == this.maxNodes) { return; }
+    if (this.nodeCount >= this.maxNodes) { return; }
     Node from = oldConnection.getFromNode();
     Node to = oldConnection.getToNode();
     oldConnection.disable();
@@ -317,7 +330,8 @@ public class Genome extends Player {
     public int numOfMatchingGenes(Genome other) //---------------------------------------------------------
     {
       int num = 0;
-      for (int i = 0; i < this.connectionGenes.size(); i++)
+      int maxIndex = Math.min(this.connectionGenes.size(),other.connectionGenes.size());
+      for (int i = 0; i < maxIndex; i++)
       {
         if (this.connectionGenes.get(i).getInnovationNumber() != other.connectionGenes.get(i).getInnovationNumber())
         {
@@ -344,6 +358,119 @@ public class Genome extends Player {
       delta += lambda * ( weightDiff / (matchingGenes + 0.0));
       return delta;
     }
+
+    @Override
+    public String toString() {
+            StringBuilder s = new StringBuilder();
+            s.append(this.getName().toUpperCase() + "\n");
+            s.append(this.nodeCount + " nodes" + "\n\n");
+            s.append("NODES:" + "\n");
+            for (Node n : this.nodeGenes.values())
+            {
+              s.append(n.toString() + ";");
+            }
+            s.append("\n\n" + "CONNECTIONS:" + "\n");
+            for (Connection c : this.connectionGenes)
+            {
+              s.append(c.toString() + ";");
+            }
+            return s.toString();
+    }
+
+    public void save() throws Exception
+    {
+      String fileName = "./saved/" + this.getName() + ".txt";
+      File f = new File(fileName);
+      f.createNewFile();
+
+      StringBuilder s = new StringBuilder();
+      s.append(this.getName() + "\n\n");
+
+      //NODES
+      for (Node n : this.nodeGenes.values())
+      {
+        s.append(n.toString() + "\n"); //ex.: input_1;
+      }
+      s.deleteCharAt(s.length() - 1);
+      s.append("\n\n");
+
+      //CONNECTIONS
+      for (Connection c : this.connectionGenes)
+      {
+        s.append(c.toText() + "\n"); //ex.: 1_43_1.4029252399344676_false_1
+      }
+
+      try {
+        FileWriter writer = new FileWriter(f);
+        writer.write(s.toString());
+        writer.close();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
+    public static Genome load(File fileAddress, int playerNum) throws Exception
+    {
+      Genome obj = null;
+      String line;
+      String out = "";
+      try {
+        BufferedReader br = new BufferedReader(new FileReader(fileAddress));
+        while ((line = br.readLine()) != null)
+        {
+            out += line + "\n";
+        }
+        //System.out.println(out);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+
+      //convert the String out into a Genome
+      String[] parts = out.split("\n\n");
+
+      // part 1: name, part 2: nodes, part 3: connections
+
+      // part 1
+      String genomeName = parts[0];
+      obj = new Genome(genomeName, playerNum, new Board());
+
+      // part 2
+      for (String subPart : parts[1].split("\n"))
+      {
+        String[] variables = subPart.split("_");
+        obj.nodeCount++;
+        int nodeNumber = Integer.parseInt(variables[1]);
+        obj.nodeGenes.put(nodeNumber,new Node(variables[0],nodeNumber));
+      }
+
+      // part 3
+      for (String subPart : parts[2].split("\n"))
+      {
+        String[] variables = subPart.split("_");
+
+        int fromNum = Integer.parseInt(variables[0]);
+        int toNum = Integer.parseInt(variables[1]);
+        double weight = Double.parseDouble(variables[2]);
+        boolean isExpressed = Boolean.parseBoolean(variables[3]);
+        int innovation = Integer.parseInt(variables[4]);
+
+        obj.innovationNumber = Math.max(innovation,obj.innovationNumber);
+        obj.connectionGenes.add(
+              new Connection( obj.nodeGenes.get(fromNum),
+                              obj.nodeGenes.get(toNum),
+                              weight, isExpressed, innovation ) );
+      }
+
+      //set in- and outgoing connections of the nodes
+      for (Node n : obj.nodeGenes.values())
+      {
+          n.calculateInOutGoing(obj.connectionGenes);
+      }
+
+      return obj;
+    }
+
+    public List<Connection> getConnectionGenes() { return this.connectionGenes; }
 
 
 

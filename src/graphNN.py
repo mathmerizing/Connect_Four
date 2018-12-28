@@ -1,6 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import sys
+import os
 
 # returns the layer in which the node is positioned in ------------------------------------------------------------------------------------------------------------
 def inLayer(Graph,node):
@@ -76,23 +77,32 @@ def neatGraph(edges,title):
     nx.draw_networkx_nodes(DG, pos, node_color = colorMap)
     nx.draw_networkx_labels(DG, pos)
     nx.draw_networkx_edges(DG, pos, edgelist = enabled)
-    nx.draw_networkx_edges(DG, pos, edgelist = disabled,  alpha = 0.2)
+    nx.draw_networkx_edges(DG, pos, edge_color = 'r', edgelist = disabled,  alpha = 0.2)
     nx.draw_networkx_edge_labels(DG, pos, edge_labels = weights, font_size = 6)
     plt.axis('off')
     plt.title(title)
     plt.show()
 
 
-#TO DO / works ?! ------------------------------------------------------------------------------------------------------------------------------------------------
-def strToEdges(filePath):
-    with open('filePath', 'r') as NNfile:
-        data = NNfile.read().replace('\n','')
-    return data
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+def strToEdges(fileName):
+    #print(fileName)
+    #print(os.listdir('saved'))
+    data = ""
+    with open(os.path.join('saved',fileName), 'r') as file:
+        for line in file:
+            data += line
 
-#TO DO -----------------------------------------------------------------------------------------------------------------------------------------------------------
-def main(NNstring,title):
-    # convert NNstring to edges
+    #print(data)
+    connections = data.split("\n\n")[2] # name and nodes are not relevant
     edges = []
+    for c in connections.split("\n")[:-1]:    
+        fromNode, toNode, weight, isExpressed, _ = c.split("_")
+        edges.append([(int(fromNode),int(toNode),float(weight)),bool(isExpressed)])
+    return edges
+
+# MAIN -------------------------------------------------------------------------------------------------------------------------------------------------------------
+def main(edges,title):
     # create the graph
     neatGraph(edges,title)
     pass
@@ -104,6 +114,6 @@ def test():
 
 # execaution of the code -----------------------------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    test()
-    filePath = sys.argv[1]
-    main(strToEdges(filePath),filePath)
+    #test()
+    fileName = sys.argv[1]
+    main(strToEdges(fileName),fileName)
