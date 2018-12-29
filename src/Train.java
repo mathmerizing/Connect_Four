@@ -21,7 +21,7 @@ public class Train {
     // testing out bash command calls from Java
     Process p;
     try {
-      p = Runtime.getRuntime().exec("python3 graphNN.py" + copy.getName() + ".txt"); // add genome path for it to be shown
+      p = Runtime.getRuntime().exec("python3 graphNN.py " + copy.getName() + ".txt -saveGraph -showGraph"); // add genome path for it to be shown
       p.waitFor();
       String shellOutput = "";
       InputStreamReader ir = new InputStreamReader(p.getInputStream());
