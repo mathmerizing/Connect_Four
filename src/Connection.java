@@ -22,8 +22,14 @@ public class Connection {
   }
 
   // mutationFactor should probably be in (0,1]
-  public void mutateWeight(double mutationFactor) {
+  public void mutateWeight(double mutationFactor)
+  {
     this.weight += mutationFactor*(new Random().nextGaussian());
+  }
+
+  public void newWeight()
+  {
+    this.weight = new Random().nextGaussian();
   }
 
   public Node getFromNode() { return this.fromNode; }

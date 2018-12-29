@@ -7,7 +7,8 @@ public class Train {
   public static void main(String[] args) throws
   Exception
   {
-    Genome test = new Genome(-1);
+    /*
+    Genome test = new Genome(-1,new Population(1));
     Genome copy = new Genome(test);
     copy.mutateAddNode(copy.getConnectionGenes().get(0));
     System.out.println("test: \n " + test);
@@ -15,7 +16,7 @@ public class Train {
     System.out.println("compat:" + test.compatibilityDistance(copy));
     System.out.println("compat2:" + copy.compatibilityDistance(test));
     copy.save();
-    Genome loaded = Genome.load(new File("./saved/" + copy.getName() + ".txt"), -1);
+    Genome loaded = Genome.load(new File("./saved/" + copy.getName() + ".txt"), -1, new Population(1));
     System.out.println("compat3:" + copy.compatibilityDistance(loaded));
 
     // testing out bash command calls from Java
@@ -34,10 +35,18 @@ public class Train {
     } catch (Exception e) {
       e.printStackTrace();
     }
+    */
     // -------------------------------------------------------------------
+    long magicNumber = Long.parseLong(args[0]);
+    System.out.println("magicNumber: " + magicNumber);
 
-    int size = 5;
+    int size = 100;
     Population population = new Population(size);
+    for (int i = 0; i < 1; i++)
+    {
+      population.nextEpoch(true,magicNumber);
+    }
+    /*
     long startTime = System.currentTimeMillis();
     population.play();
     long endTime = System.currentTimeMillis();
@@ -54,6 +63,8 @@ public class Train {
       System.out.println(first.compatibilityDistance(g));
       //System.out.println(g);
     }
+    */
+
   }
 
 }

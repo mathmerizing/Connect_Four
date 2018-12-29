@@ -44,6 +44,8 @@ Exception
               return choices[new Random().nextInt(choices.length)];
           }
 
+          // temporarily disabled random moves !!!
+          /*
           if (this.depth == 2) {
               if (new Random().nextInt(4) == 0) {
                   return board.getPossibleMoves()[new Random().nextInt(board.getPossibleMoves().length)];
@@ -53,6 +55,7 @@ Exception
                   return board.getPossibleMoves()[new Random().nextInt(board.getPossibleMoves().length)];
               }
           }
+          */
 
 
         if (board.getPossibleMoves().length < this.oldPossibleMoves) {

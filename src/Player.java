@@ -1,6 +1,6 @@
 abstract class Player
 {
-    final String name;
+    String name;
     int playerNum;
     private String tileType;
 
@@ -24,6 +24,11 @@ abstract class Player
     public String getName()
     {
         return this.name;
+    }
+
+    public void setName(String name)
+    {
+      this.name = name;
     }
 
     public int getPlayerNum()
