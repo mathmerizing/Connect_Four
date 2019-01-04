@@ -3,6 +3,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Arrays;
 import java.util.Random;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 
 public class Population {
   private int size;
@@ -51,7 +54,7 @@ public class Population {
     System.out.println("Average Fitness: " + averageFitness);
     this.printPerformance();
 
-    if (saveBest) { best.setName(magicNumber + "/Genome_" + magicNumber + "_" + epoch); System.out.println(best.getName()); best.save(); best.saveGraph(); }
+    if (saveBest) { best.setName(magicNumber + "/Genome_" + magicNumber + "_" + epoch); System.out.println(best.getName()); best.save(); best.saveGraph(); saveStats(magicNumber); }
 
     List<Species> speciesList = new ArrayList<>();
     for (Genome g : this.genomes)
@@ -214,6 +217,71 @@ public class Population {
     System.out.println("\t WIN:  " + winPerc + " %");
     System.out.println("\t TIE:  " + tiePerc + " %");
     System.out.println("\t LOSS: " + lossPerc + " %");
+  }
+
+  public void saveStats(long magicNumber)
+  {
+    double[] fitnessValues = new double[this.size];
+    List<Genome> sortedGenomes = this.sortedByFitness();
+    for (int i = 0; i < this.size; i++) { fitnessValues[i] = sortedGenomes.get(i).getFitness(); }
+
+    double maxFit = calculateMax(fitnessValues);
+    double upperQFit = calculateUpperQuartile(fitnessValues);
+    double medianFit = calculateMedian(fitnessValues);
+    double lowerQFit = calculateLowerQuartile(fitnessValues);
+    double minFit = calculateMin(fitnessValues);
+
+    String fileName = "./saved/" + magicNumber + "/stats.txt";
+    File f = new File(fileName);
+
+    StringBuilder s = new StringBuilder();
+
+    try {
+      if (f.createNewFile()) {
+        //File is created
+        //do nothing
+      } else {
+        //File already exists
+        s.append("\n\n");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+
+    s.append(maxFit + "\n" + upperQFit + "\n" + medianFit + "\n" + lowerQFit + "\n" + minFit);
+
+    try {
+      FileWriter writer = new FileWriter(f,true);
+      writer.write(s.toString());
+      writer.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+  }
+
+  private double calculateMin(double[] data) {
+    return data[data.length - 1];
+  }
+
+  private double calculateMax(double[] data) {
+    return data[0];
+  }
+
+  public double calculateMedian(double[] data) {
+        int j = (int) Math.floor( (data.length - 1.0) / 2.0 );
+        return data[j];
+  }
+
+  private double calculateLowerQuartile(double[] data) {
+        int j = (int) Math.floor( (3.0 * data.length - 1.0) / 4.0 );
+        return data[j];
+  }
+
+  private double calculateUpperQuartile(double[] data) {
+        int j = (int) Math.floor( (data.length - 1.0) / 4.0 );
+        return data[j];
   }
 
 

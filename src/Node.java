@@ -89,11 +89,11 @@ public class Node {
   {
     if (this.valueCalculated) { return this.value; };
 
-    /*
+
     System.err.println("value(" + this.number + ")");
     this.ingoing.forEach(c -> System.err.print(c + "; "));
     System.err.println(" ");
-    */
+    
 
     double sum = 0;
     for (Connection c : this.ingoing)

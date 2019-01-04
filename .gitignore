@@ -55,5 +55,8 @@ modules.xml
 *.class
 *.ini
 
+/src/saved
+/src/__pycache__
+
 /src/META-INF/MANIFEST.MF
 /.idea/artifacts/

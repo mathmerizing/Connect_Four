@@ -562,7 +562,7 @@ public class Genome extends Player {
             return s.toString();
     }
 
-    public void saveGraph() { this.saveGraph(false,true); }
+    public void saveGraph() { this.saveGraph(false,false); }
 
     public void saveGraph(boolean showWeights, boolean showGraph)
     {

@@ -1,0 +1,49 @@
+// THIS IS A QUICK TUTORIAL ON HOW TO TRAIN BOTS THAT PLAY FOUR IN A ROW
+// ---------------------------------------------------------------------
+
+
+// -- LET JAVA MAKE ALL SIMULATIONS AND CALCULATIONS: --
+rm *.class;javac Train.java;java Train 040120192
+
+// NOTE: THE NUMBER AT THE END CONSISTS OF:
+// (DD) TWO DIGITS FOR THE DAY OF THE MONTH
+// (MM) TWO DIGITS FOR THE MONTH
+// (YYYY) FOUR DIGITS FOR THE YEAR
+// (*) AS MANY DIGITS AS ARE NEEDED FOR SHOWING WHICH TRY IT IS (ON THE GIVEN DAY)
+
+
+// -----------------------------------------------------------------------------
+// -- ADDITIONAL TOOLS: --
+
+
+// IMPORTANT:
+// FROM NOW ON DROP ALL LEADING ZEROS (THE STRING IS BEING CAST TO INT)
+// 040120192 TURNS INTO 40120192 !!!
+
+
+
+// -- SHOW THE GRAPH OF 1 NETWORK: --
+python3 loadNN.py 40120192/Genome_40120192_10.pickle
+
+
+
+// -- GET MORE INFORMATION ABOUT A GRAPH: --
+python3 grphNN.py 40120192/Genome_40120192_10.txt
+
+// POSSIBLE ARGUMENTS:
+// -saveGraph: creates .pickle file (already called in Train.java)
+// -showGraph: opens the graph of the network in a new window
+// -showWeights: shows the weights in the graph of the network
+// -printConnections: lists all the connections of the graph in the terminal
+
+
+// -- SHOW ALL GRAPHS OF ONE SIMULATION: --
+python3 loadAllNN.py 40120192
+
+
+
+// -- PLOT STATISTICS (OF FITNESSES) OF SIMULATION: --
+python3 plotStats.py 40120192
+
+// OPTIONAL ARGUMENT:
+// -plotAll: IN ADDITION TO MAXIMUM AND MINIMUM, UPPER/LOWER QUARTILE AND MEDIAN ARE ALSO BEING PLOTTED
