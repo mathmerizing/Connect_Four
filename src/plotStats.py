@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 import sys
 import os
 
-def showPlot(magicNumber,plotAll):
-    fileName = os.path.join("saved",magicNumber,"stats.txt")
-    print(fileName)
+fig = plt.figure()
+ax1 = fig.add_subplot(1,1,1)
 
+def animate(i,fileName):
     data = ""
     with open(fileName, 'r') as file:
         for line in file:
@@ -24,24 +25,33 @@ def showPlot(magicNumber,plotAll):
     lowers = [l[3] for l in L]
     mins = [l[4] for l in L]
 
-    plt.plot(x, maxs, color='green',label='maximum')
-    if (plotAll):
-        plt.plot(x, uppers, color='blue',label='upper quartile')
-        plt.plot(x, medians, color='orange',label='median')
-        plt.plot(x, lowers, color='purple',label='lower quartile')
-    plt.plot(x, mins, color='red',label='minimum')
-
+    ax1.clear()
     plt.xlabel('EPOCH')
     plt.ylabel('FITNESS')
     plt.title('EVOLUTION ' + magicNumber)
+
+    ax1.plot(x, maxs, color='green',label='maximum')
+    if (plotAll):
+        ax1.plot(x, uppers, color='blue',label='upper quartile')
+        ax1.plot(x, medians, color='orange',label='median')
+        ax1.plot(x, lowers, color='purple',label='lower quartile')
+    ax1.plot(x, mins, color='red',label='minimum')
+
     plt.hlines(y=209, xmin=0, xmax=len(L), linewidth=1, color='green',linestyles='dotted',label='win')
     plt.hlines(y=176, xmin=0, xmax=len(L), linewidth=1, color='black',linestyles='dotted',label='tie')
     plt.hlines(y=101, xmin=0, xmax=len(L), linewidth=1, color='red',linestyles='dotted',label='loose')
 
-    plt.legend(loc=4,fancybox=True, shadow=True)
+    ax1.legend(loc=4,fancybox=True, shadow=True)
+    manager = plt.get_current_fig_manager()
+    manager.resize(*manager.window.maxsize())
+
+
+def showPlot(magicNumber,plotAll):
+    fileName = os.path.join("saved",magicNumber,"stats.txt")
+    print(fileName)
+
+    ani = animation.FuncAnimation(fig, animate, fargs = [fileName], interval = 10000)
     plt.show()
-
-
 
 
 if __name__ == "__main__":

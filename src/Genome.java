@@ -197,10 +197,13 @@ public class Genome extends Player {
           this.nodeCount++;
         }
 
-        Connection clonedConnection = new Connection(from,to,c.getWeight(),c.getIsExpressed(),innovNum);
-        offspring.connectionGenes.add(clonedConnection);
-        from.addOutGoing(clonedConnection);
-        to.addInGoing(clonedConnection);
+        if (!offspring.createsCycle(from,to))
+        {
+          Connection clonedConnection = new Connection(from,to,c.getWeight(),c.getIsExpressed(),innovNum);
+          offspring.connectionGenes.add(clonedConnection);
+          from.addOutGoing(clonedConnection);
+          to.addInGoing(clonedConnection);
+        }
       }
     }
     Collections.sort(offspring.connectionGenes, (a,b) -> a.getInnovationNumber() - b.getInnovationNumber());
@@ -678,6 +681,8 @@ public class Genome extends Player {
     public List<Connection> getConnectionGenes() { return this.connectionGenes; }
 
     public void setPopulation(Population p) { this.population = p; }
+
+    public Population getPopulation() { return this.population; }
 
 
 

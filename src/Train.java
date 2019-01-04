@@ -40,9 +40,9 @@ public class Train {
     long magicNumber = Long.parseLong(args[0]);
     System.out.println("magicNumber: " + magicNumber);
 
-    int size = 100;
+    int size = 1000;
     Population population = new Population(size);
-    for (int i = 0; i < 200; i++)
+    for (int i = 0; i < 250; i++)
     {
       try {
         population.nextEpoch(true,magicNumber);

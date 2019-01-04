@@ -12,6 +12,7 @@ public class Species {
 
   private final double COMPATIBILITY_THRESHOLD = 4.0;
   private final double ELITE_PERCENTAGE = 0.4;
+  private final double RANDOM_PERCENTAGE = 0.1;
 
   public Species(int num)
   {
@@ -95,7 +96,7 @@ public class Species {
 
       //System.out.println("\n\n matchingConnections: \n" + firstElite.matchingGenes(secondElite) + "\n\n");
 
-      Genome offspring = firstElite.crossover(secondElite);
+      Genome offspring = (new Random().nextDouble() <= this.RANDOM_PERCENTAGE) ? new Genome(-1,firstElite.getPopulation()) : firstElite.crossover(secondElite);
       //System.out.println("offspring has " + offspring.getConnectionGenes().size()  + " connections");
       //System.out.println(offspring);
       //System.exit(0);
