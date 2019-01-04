@@ -364,7 +364,10 @@ public class Genome extends Player {
     {
       Node tmp = stack.pop();
       tmp.setVisited(true);
-      if (tmp.next().contains(start)) { return true; }
+      for (Node n : tmp.next())
+      {
+        if (n.getNumber() == start.getNumber()) { return true; }
+      }
       for (Node n : tmp.nextUnvisited())
       {
         stack.push(n);
