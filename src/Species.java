@@ -69,6 +69,8 @@ public class Species {
       this.genomesList.forEach(g -> this.cumulativeFitness += g.getFitness());
     }
     N_new = (int) Math.round(this.cumulativeFitness/averageFitness);
+    System.out.println("this.cumulativeFitness = " + this.cumulativeFitness);
+    System.out.println("averageFitness = " + averageFitness);
     System.out.println("N_new = " + N_new); // COMMENT THIS OUT !!!!!!!!!!!!!!!!!!
 
     Collections.sort(this.genomesList, (a,b) -> b.getFitness() - a.getFitness());
@@ -86,7 +88,17 @@ public class Species {
       int secondRandIndex = new Random().nextInt(eliteNum);
       Genome firstElite = this.elite.get(firstRandIndex);
       Genome secondElite = this.elite.get(secondRandIndex);
+      //System.out.println("firstElite has " + firstElite.getConnectionGenes().size()  + " connections");
+      //System.out.println(firstElite);
+      //System.out.println("secondElite has " + secondElite.getConnectionGenes().size()  + " connections");
+      //System.out.println(secondElite);
+
+      //System.out.println("\n\n matchingConnections: \n" + firstElite.matchingGenes(secondElite) + "\n\n");
+
       Genome offspring = firstElite.crossover(secondElite);
+      //System.out.println("offspring has " + offspring.getConnectionGenes().size()  + " connections");
+      //System.out.println(offspring);
+      //System.exit(0);
       offspring.mutate();
       survivingGenomes.add(offspring);
       N_new--;
@@ -97,6 +109,7 @@ public class Species {
   }
 
   public List<Genome> getGenomeList() { return this.genomesList; }
+  public int getSpeciesNum() { return this.speciesNum; }
 
 
 

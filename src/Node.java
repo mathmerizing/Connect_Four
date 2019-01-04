@@ -88,13 +88,27 @@ public class Node {
   public double getValue()
   {
     if (this.valueCalculated) { return this.value; };
+
+    /*
+    System.err.println("value(" + this.number + ")");
+    this.ingoing.forEach(c -> System.err.print(c + "; "));
+    System.err.println(" ");
+    */
+
     double sum = 0;
-    for (Node n : last())
+    for (Connection c : this.ingoing)
     {
-      sum += n.getValue();
+      if (c.getIsExpressed()) {
+        Node node = c.getFromNode();
+        double weight = c.getWeight();
+        sum += node.getValue() * weight;
+      }
     }
     sum = 1.0/(1.0+java.lang.Math.exp(-1.0*sum));
     this.value = sum;
+
+    this.valueCalculated = true;
+
     return this.value;
   }
 
@@ -103,7 +117,7 @@ public class Node {
     List<Node> out = new ArrayList<>();
     for (Connection c : this.ingoing)
     {
-      out.add(c.getFromNode());
+      if (c.getIsExpressed()) { out.add(c.getFromNode()); }
     }
     return out;
   }

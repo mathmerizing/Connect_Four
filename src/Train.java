@@ -42,9 +42,14 @@ public class Train {
 
     int size = 100;
     Population population = new Population(size);
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 200; i++)
     {
-      population.nextEpoch(true,magicNumber);
+      try {
+        population.nextEpoch(true,magicNumber);
+      } catch (Exception e) {
+        e.printStackTrace();
+        break;
+      }
     }
     /*
     long startTime = System.currentTimeMillis();

@@ -4,9 +4,19 @@ import sys
 import os
 import pickle
 
+# create a dictionary with predecessors for each node
+def predecessorDict(enabled,nodes):
+    dict = {}
+    for node in nodes:
+        dict[node] = []
+    for edge in enabled:
+        dict[edge[1]].append(edge[0])
+    return dict
+
+
 # returns the layer in which the node is positioned in ------------------------------------------------------------------------------------------------------------
-def inLayer(Graph,node):
-    return max([inLayer(Graph,n)+1 for n in Graph.predecessors(node)]+[0])
+def inLayer(Graph,node,predecessorDict):
+    return max([inLayer(Graph,n,predecessorDict)+1 for n in predecessorDict[node]]+[0])
 
 
 # helper function for neatGraph -----------------------------------------------------------------------------------------------------------------------------------
@@ -17,7 +27,7 @@ def _heightCalculator(n,k,i):
         return i*((n-1.0)/(k+1.0))
 
 # make a neat graph (pun intended) --------------------------------------------------------------------------------------------------------------------------------
-def neatGraph(nodes,edges,title,showWeights = False, saveGraph = False, showGraph = False):
+def neatGraph(nodes,edges,fileName,showWeights = False, saveGraph = False, showGraph = False, printConnections = False):
     #create a directed graph
     DG = nx.DiGraph()
     enabled = []
@@ -30,9 +40,13 @@ def neatGraph(nodes,edges,title,showWeights = False, saveGraph = False, showGrap
         else:
             disabled.append((FROM,TO))
 
-
     #test for cycles in graph:
     assert nx.number_of_selfloops(DG) == 0
+
+    if(printConnections):
+        print(f"enabled connnections = {enabled}")
+        print(f"disabled connnections = {disabled}")
+        print(f"edges: \n {DG.edges()}")
 
     # sort nodes by type
     inNodes, hiddenNodes, outNodes = [], [], []
@@ -48,7 +62,7 @@ def neatGraph(nodes,edges,title,showWeights = False, saveGraph = False, showGrap
     for inNode in inNodes:
         nodeDict[inNode] = 0
     for hidden in hiddenNodes:
-        nodeDict[hidden] = inLayer(DG,hidden)
+        nodeDict[hidden] = inLayer(DG,hidden,predecessorDict(enabled,inNodes+hiddenNodes+outNodes))
     outputDepth = max(nodeDict.values()) + 1
     for outNode in outNodes:
         nodeDict[outNode] = outputDepth
@@ -90,7 +104,7 @@ def neatGraph(nodes,edges,title,showWeights = False, saveGraph = False, showGrap
     nx.draw_networkx_edges(DG, pos, edge_color = 'r', edgelist = disabled,  alpha = 0.3)
     if (showWeights): nx.draw_networkx_edge_labels(DG, pos, edge_labels = weights, font_size = 6)
     plt.axis('off')
-    plt.title(title)
+    plt.title(fileName)
     if (saveGraph):
         with open(os.path.join('saved',fileName.replace('.txt','.pickle')),'wb') as file:
             pickle.dump(ax, file)
@@ -107,21 +121,28 @@ def strToInfo(fileName):
         for line in file:
             data += line
 
-    points,connections = data.split("\n\n")[1:3] # onbly nodes and edges are important
+    points,connections = data.split("\n\n")[1:3] # only nodes and edges are important
     nodes = []
     for p in points.split("\n"):
         type, number = p.split("_")
         nodes.append((type,int(number)))
     edges = []
-    for c in connections.split("\n")[:-1]:
-        fromNode, toNode, weight, isExpressed, _ = c.split("_")
-        edges.append([(int(fromNode),int(toNode),float(weight)),(True if isExpressed == "true" else False)])
+
+    for c in connections.split("\n"):
+        try:
+            if (c != ""):
+                fromNode, toNode, weight, isExpressed, _ = c.split("_")
+                edges.append([(int(fromNode),int(toNode),float(weight)),(True if isExpressed == "true" else False)])
+        except Exception as e:
+            print(f"'{c}' is not a valid connection", file=sys.stderr)
+
+
     return (nodes,edges)
 
 # MAIN -------------------------------------------------------------------------------------------------------------------------------------------------------------
-def main(nodes,edges,title,showW,save,showG):
+def main(fileName,showW,save,showG,printC):
     # create the graph
-    neatGraph(nodes,edges,title,showWeights = showW,saveGraph = save,showGraph = showG)
+    neatGraph(*strToInfo(fileName),fileName,showWeights = showW,saveGraph = save,showGraph = showG,printConnections = printC)
     pass
 
 # an example to test some functions ------------------------------------------------------------------------------------------------------------------------------
@@ -134,8 +155,10 @@ def test():
 if __name__ == "__main__":
     #test() // this is only for test purposes
     fileName = sys.argv[1]
-    showWeights, save, showGraph = False, False, False
+    print("python3: \t" + fileName)
+    showWeights, save, showGraph, printConnections = False, False, False, False
     if ("-showWeights" in sys.argv): showWeights = True
     if ("-saveGraph" in sys.argv): save = True
     if ("-showGraph" in sys.argv): showGraph = True
-    main(*strToInfo(fileName),fileName,showWeights,save,showGraph)
+    if ("-printConnections" in sys.argv): printConnections = True
+    main(fileName,showWeights,save,showGraph,printConnections)

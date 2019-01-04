@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +43,8 @@ public class Genome extends Player {
   {
     super(name,playerNum,board);
     this.board = board;
+    this.population = population;
+    //System.out.println("GENOME_CONSTRUCTOR_1; NUM_OF_GENES: " + this.connectionGenes.size());
   }
 
   public Genome(int playerNum, Population population) throws Exception //--------------------------------------------------------------
@@ -93,14 +96,21 @@ public class Genome extends Player {
       this.nodeGenes.get(this.IN_NODES + j).addInGoing(temp);
     }
 
+    //System.out.println("GENOME_CONSTRUCTOR_2; NUM_OF_GENES: " + this.connectionGenes.size());
+
+  }
+
+  public Genome(Genome other) throws Exception
+  {
+    this(other, new Board());
   }
 
   //copy constructor
-  public Genome(Genome other) throws Exception //----------------------------------------------
+  public Genome(Genome other, Board board) throws Exception //----------------------------------------------
   {
-    super(other.getName(),other.getPlayerNum(),new Board());
+    super("Genome_" +  String.valueOf((new Random()).nextInt()),other.getPlayerNum(),board);
 
-    this.board = new Board();
+    this.board = board;
     this.population = other.population;
     this.nodeCount = other.nodeCount;
     this.innovationNumber = other.innovationNumber;
@@ -111,6 +121,9 @@ public class Genome extends Player {
         this.nodeGenes.put(entry.getKey(),new Node(entry.getValue()));
     }
 
+    //System.out.println("There are " + other.connectionGenes.size() + " connnections in the original.");
+    //System.out.println("At first there are " + this.connectionGenes.size() + " connections before copying.");
+
     // deep copy of other.conncetion saved to this.connectionGenes
     for (Connection c : other.connectionGenes)
     {
@@ -120,23 +133,26 @@ public class Genome extends Player {
                             c.getWeight(), c.getIsExpressed(), c.getInnovationNumber() ) );
     }
 
+    //System.out.println("There are " + this.connectionGenes.size() + " connnections in the deep copy.");
+
     //set in- and outgoing connections of the nodes
     for (Node n : this.nodeGenes.values())
     {
         n.calculateInOutGoing(this.connectionGenes);
     }
 
+    //System.out.println("GENOME_COPY_CONSTRUCTOR; NUM_OF_GENES: " + this.connectionGenes.size());
+
   }
 
   public Genome crossover(Genome other) throws Exception //-------------------------------------------
   {
-    if (this.nodeCount >= this.MAX_NODES) { return this; }
+    if (this.nodeCount >= this.MAX_NODES) { return new Genome(this); }
 
     Genome offspring; // needs to be created though both parents
     Genome strongerParent;
     Genome weakerParent;
     int highestInnovation; // highest Innovation Number of the stronger parent
-    int matchingGenes = this.numOfMatchingGenes(other);
     if (this.fitness > other.fitness || (this.fitness == other.fitness && new Random().nextInt(2) == 0) )
     {
       strongerParent = this;
@@ -146,56 +162,45 @@ public class Genome extends Player {
       weakerParent = this;
     }
     offspring = new Genome(strongerParent);
-    highestInnovation = strongerParent.connectionGenes.get(this.connectionGenes.size()-1).getInnovationNumber();
+    List<Integer> matchingGenes = strongerParent.matchingGenes(weakerParent);
+    //System.out.println("matchingGenes: " + matchingGenes);
+    highestInnovation = strongerParent.connectionGenes.get(strongerParent.connectionGenes.size()-1).getInnovationNumber();
 
-    for (int i = matchingGenes;  i < weakerParent.connectionGenes.size(); i++)
+    for (Connection c : weakerParent.connectionGenes)
     {
-      if ( weakerParent.connectionGenes.get(i).getInnovationNumber() <= highestInnovation)
+      int innovNum = c.getInnovationNumber();
+      if (innovNum <= highestInnovation && !matchingGenes.contains(innovNum))
       {
-        boolean inStrongerParent = false;
-        int checkInnovation = weakerParent.connectionGenes.get(i).getInnovationNumber();
-        for (int j = matchingGenes; j < strongerParent.connectionGenes.size(); j++)
+        // get fromNode and toNode of this connection
+        int fromNum = c.getFromNode().getNumber();
+        int toNum = c.getToNode().getNumber();
+
+        //getFromNode
+        Node from;
+        if (offspring.nodeGenes.get(fromNum) != null)
         {
-          if (strongerParent.connectionGenes.get(j).getInnovationNumber() == checkInnovation)
-          {
-            inStrongerParent = true;
-            break;
-          }
+          from = offspring.nodeGenes.get(fromNum);
+        } else {
+          from = new Node("hidden",fromNum);
+          offspring.nodeGenes.put(fromNum,from);
+          this.nodeCount++;
         }
-        if (!inStrongerParent)
+
+        //getToNode
+        Node to;
+        if (offspring.nodeGenes.get(toNum) != null)
         {
-          Connection weakConnection = weakerParent.connectionGenes.get(i);
-          // get fromNode and toNode of this connection
-          int fromNum = weakConnection.getFromNode().getNumber();
-          int toNum = weakConnection.getToNode().getNumber();
-
-          //getFromNode
-          Node from;
-          if (offspring.nodeGenes.get(fromNum) != null)
-          {
-            from = offspring.nodeGenes.get(fromNum);
-          } else {
-            from = new Node("hidden",fromNum);
-            offspring.nodeGenes.put(fromNum,from);
-            this.nodeCount++;
-          }
-
-          //getToNode
-          Node to;
-          if (offspring.nodeGenes.get(toNum) != null)
-          {
-            to = offspring.nodeGenes.get(toNum);
-          } else {
-            to = new Node("hidden",toNum);
-            offspring.nodeGenes.put(toNum,to);
-            this.nodeCount++;
-          }
-
-          Connection clonedConnection = new Connection(from,to,weakConnection.getWeight(),weakConnection.getIsExpressed(),checkInnovation);
-          offspring.connectionGenes.add(clonedConnection);
-          from.addOutGoing(clonedConnection);
-          to.addInGoing(clonedConnection);
+          to = offspring.nodeGenes.get(toNum);
+        } else {
+          to = new Node("hidden",toNum);
+          offspring.nodeGenes.put(toNum,to);
+          this.nodeCount++;
         }
+
+        Connection clonedConnection = new Connection(from,to,c.getWeight(),c.getIsExpressed(),innovNum);
+        offspring.connectionGenes.add(clonedConnection);
+        from.addOutGoing(clonedConnection);
+        to.addInGoing(clonedConnection);
       }
     }
     Collections.sort(offspring.connectionGenes, (a,b) -> a.getInnovationNumber() - b.getInnovationNumber());
@@ -272,19 +277,22 @@ public class Genome extends Player {
   //check if it creates a cycle !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   public void mutateAddConnection(int from, int to) //------------------------------------------------------------
   {
+      if (from == to) { return; }
       Node start = this.nodeGenes.get(from);
       Node end = this.nodeGenes.get(to);
-      if (createsCycle(start,end) || connectionExists(start,end)) { return; }
+      if (end.getType() == "input" || connectionExists(start,end) || createsCycle(start,end)) { return; }
       mutateAddConnection(start, end);
   }
 
   public void mutateAddConnection(Node start, Node end) //-------------------------------------------------------
   {
       updateInnovationNumber();
-      Connection newConnection = new Connection(start,end,true,true,innovationUp());
+      int cInnov = this.population.getConnectionInnovation(start.getNumber(),end.getNumber());
+      Connection newConnection = new Connection(start,end,true,true,(cInnov == 0) ? innovationUp() : cInnov);
       this.connectionGenes.add(newConnection);
       start.addOutGoing(newConnection);
       end.addInGoing(newConnection);
+      this.population.addConnection(newConnection);
   }
 
   public void mutateAddNode(Connection oldConnection) //-----------------------------------------------------------
@@ -297,9 +305,18 @@ public class Genome extends Player {
     Node middle = new Node("hidden",this.nodeCount);
     this.nodeGenes.put(nodeCount,middle);
     updateInnovationNumber();
-    this.connectionGenes.add(new Connection(from,middle,true,true,innovationUp()));
-    this.connectionGenes.add(new Connection(middle,to,oldConnection.getWeight(),
-                                            true,oldConnection.getInnovationNumber()));
+    int cInnov1 = this.population.getConnectionInnovation(from.getNumber(),middle.getNumber());
+    Connection firstConnection = new Connection(from,middle,true,true,(cInnov1 == 0) ? innovationUp() : cInnov1);
+    int cInnov2 = this.population.getConnectionInnovation(middle.getNumber(),to.getNumber());
+    Connection secondConnection = new Connection(middle,to,oldConnection.getWeight(),true,(cInnov2 == 0) ? innovationUp() : cInnov2);
+    this.connectionGenes.add(firstConnection);
+    this.connectionGenes.add(secondConnection);
+    from.addOutGoing(firstConnection);
+    middle.addInGoing(firstConnection);
+    middle.addOutGoing(secondConnection);
+    to.addInGoing(secondConnection);
+    this.population.addConnection(firstConnection);
+    this.population.addConnection(secondConnection);
   }
 
   public void updateInnovationNumber() { this.innovationNumber = this.population.updateGlobalInnovation(this.innovationNumber); }
@@ -339,12 +356,12 @@ public class Genome extends Player {
   public boolean createsCycle(Node start,Node end) { //-----------------------------------------------------
     unvisitAllNodes();
     Stack<Node> stack = new Stack<>();
-    stack.push(start);
+    stack.push(end);
     while (!stack.empty())
     {
       Node tmp = stack.pop();
       tmp.setVisited(true);
-      if (tmp.next().contains(end)) { return true; }
+      if (tmp.next().contains(start)) { return true; }
       for (Node n : tmp.nextUnvisited())
       {
         stack.push(n);
@@ -359,20 +376,61 @@ public class Genome extends Player {
     // playerNum should be 1 or -1, hence the Matrix is being converted such that
     // the entry 1 stands for this genome and the entry -1 stands for its opponent
     Matrix currentState = Matrix.scalarMultiply(this.playerNum,this.board.getBoardStateLinear());
+
+    // THE COMMENTED OUT CODE BELOW IS ONLY FOR TESTING PURPOSES
+    /*
+    // FORWARD PROPAGATION IF NO HIDDEN LAYERS AND FULLY CONNECTED -------------------------------
+    //System.out.println(this.board);
+    //System.out.println("currentState: \n" + currentState);
+    Matrix x = new Matrix(43,1,false);
+    for (int i = 1; i <= currentState.getRows(); i++)
+    {
+      x.setEntry(i-1,currentState.getEntry(i-1));
+    }
+    x.setEntry(42,this.nodeGenes.get(50).getValue());
+    System.out.println("x = \n" + x);
+    Matrix A = new Matrix(7,43,false);
+    for (Connection c : this.connectionGenes)
+    {
+      int from = c.getFromNode().getNumber();
+      int to = c.getToNode().getNumber();
+      double val = c.getWeight();
+
+      int row = to - 43;
+      int col = (from == 50) ? 42 : from - 1;
+      A.setEntry(row,col,val);
+    }
+    System.out.println("A = \n" + A);
+    Matrix b = Matrix.multiply(A,x);
+    b.sigmoid();
+    System.out.println("\n\n A*x = \n" + b + "\n");
+    // END OF FORWARD PROPAGATION -----------------------------------------------------------
+    */
+
     for (int i = 1; i <= currentState.getRows(); i++)
     {
       // set the values of the input nodes
       this.nodeGenes.get(i).setValue(currentState.getEntry(i-1));
     }
+
+
   }
 
   public Matrix getOutput() //----------------------------------------------------------------------------
   {
     Matrix out = new Matrix(this.OUT_NODES,1,false);
-    for (int i = 1; i <= this.OUT_NODES; i++)
-    {
-      out.setEntry(i-1,this.nodeGenes.get(this.IN_NODES+i).getValue());
-    }
+    try {
+      for (int i = 1; i <= this.OUT_NODES; i++)
+      {
+        out.setEntry(i-1,this.nodeGenes.get(this.IN_NODES+i).getValue());
+      }
+      /*
+      for (int i = 1; i <= this.OUT_NODES; i++)
+      {
+        System.out.println(this.getName() + ": " + (this.IN_NODES+i) + " : " + out.getEntry(i-1));
+      }
+      */
+    } catch (Exception e) { /*e.printStackTrace();*/ System.out.println("Genome.getOutput() messed up");}
     return out;
     /*
     OPTIONAL:
@@ -386,8 +444,12 @@ public class Genome extends Player {
     public void move(Board board) //-------------------------------------------------------------
     {
       setInput();
+      int move = Matrix.argmax(getOutput());
+      System.out.println(this.getName() + ": " + move);
+      //System.out.println(this);
+      resetAllValueCalculated(); //DO I NEED THIS LINE ?
       try {
-        board.nextMove(this.playerNum,Matrix.argmax(getOutput()));
+        board.nextMove(this.playerNum,move);
       } catch (Exception e) {
         // abort game because player failed to make a possible move
         this.illegalMove = true;
@@ -405,45 +467,80 @@ public class Genome extends Player {
     public void calculateFitness() //----------------------------------------------------------------------
     {
       if (this.illegalMove == true) {
-        this.fitness = -100 + this.board.getMoves();
+        this.fitness = this.board.getMoves() + 1;
       } else if (this.board.getWinner() == this.playerNum) {
-        this.fitness = 150 - this.board.getMoves();
+        this.fitness = 251 - this.board.getMoves();
       } else if (this.board.getWinner() == -1*this.playerNum) {
-        this.fitness = this.board.getMoves();
+        this.fitness = this.board.getMoves() + 101;
       } else {
-        this.fitness = 75;
+        this.fitness = 176;
       }
     }
 
-    public int numOfMatchingGenes(Genome other) //---------------------------------------------------------
+    public List<Integer> matchingGenes(Genome other) //---------------------------------------------------------
     {
-      int num = 0;
-      int maxIndex = Math.min(this.connectionGenes.size(),other.connectionGenes.size());
-      for (int i = 0; i < maxIndex; i++)
+      List<Integer> matchingConnections = new ArrayList<>();
+      List<Integer> strongConnections = new ArrayList<>();
+      List<Integer> weakConnections = new ArrayList<>();
+      this.connectionGenes.forEach(c -> strongConnections.add(c.getInnovationNumber()));
+      other.connectionGenes.forEach(c -> weakConnections.add(c.getInnovationNumber()));
+      Collections.sort(strongConnections);
+      Collections.sort(weakConnections);
+
+      //intersection algorithm for two sorted lists
+      while (!strongConnections.isEmpty() && !weakConnections.isEmpty())
       {
-        if (this.connectionGenes.get(i).getInnovationNumber() != other.connectionGenes.get(i).getInnovationNumber())
-        {
-          break;
-        }
-        num++;
+        if (strongConnections.get(0).compareTo(weakConnections.get(0)) < 0) {
+          strongConnections.remove(0);
+        } else if (strongConnections.get(0).compareTo(weakConnections.get(0)) == 0) {
+          matchingConnections.add(strongConnections.remove(0));
+          weakConnections.remove(0);
+        } else { weakConnections.remove(0); }
       }
-      return num;
+
+      return matchingConnections;
+    }
+
+    public double structuralComplexity()
+    {
+      int complexity = 0;
+      complexity += this.connectionGenes.size() * 3.0;
+      for (Connection c : this.connectionGenes)
+      {
+        if (c.getIsExpressed()) {
+          complexity += 1.0;
+        } else {
+          complexity += 0.01;
+        }
+      }
+      return complexity;
     }
 
     public double compatibilityDistance(Genome other)
     {
-      int matchingGenes = this.numOfMatchingGenes(other);
+      List<Integer> matchingGenes = this.matchingGenes(other);
       int numGenes1 = this.connectionGenes.size();
       int numGenes2 = other.connectionGenes.size();
       int N = Math.max(numGenes1,numGenes2);
 
-      double delta = (this.MU / (N + 0.0)) * (numGenes1+numGenes2-2*matchingGenes);
+      double delta = (this.MU / (N + 0.0)) * (numGenes1+numGenes2-2*matchingGenes.size());
       double weightDiff = 0.0;
-      for (int i = 0; i < matchingGenes; i++)
+      for (Connection c1 : this.connectionGenes)
       {
-        weightDiff += Math.abs(this.connectionGenes.get(i).getWeight() - other.connectionGenes.get(i).getWeight());
+        if (matchingGenes.contains(c1.getInnovationNumber()))
+        {
+          int firstInnov = c1.getInnovationNumber();
+          for (Connection c2 : other.connectionGenes)
+          {
+            if (firstInnov == c2.getInnovationNumber())
+            {
+              weightDiff += Math.abs(c1.getWeight()-c2.getWeight());
+              break;
+            }
+          }
+        }
       }
-      delta += this.LAMBDA * ( weightDiff / (matchingGenes + 0.0));
+      delta += this.LAMBDA * ( weightDiff / (matchingGenes.size() + 0.0));
       return delta;
     }
 
@@ -465,12 +562,13 @@ public class Genome extends Player {
             return s.toString();
     }
 
-    public void saveGraph() { this.saveGraph(false,false); }
+    public void saveGraph() { this.saveGraph(false,true); }
 
     public void saveGraph(boolean showWeights, boolean showGraph)
     {
       Process p;
       try {
+        System.out.println(this.getName());
         String command = "python3 graphNN.py " + this.getName() + ".txt -saveGraph";
         if (showWeights) { command += " -showWeights"; }
         if (showGraph) { command += " -showGraph"; }
@@ -484,6 +582,9 @@ public class Genome extends Player {
     public void save() throws Exception
     {
       String fileName = "./saved/" + this.getName() + ".txt";
+      System.out.println(fileName);
+      String[] path = fileName.split("/");
+      new File(String.join("/",Arrays.copyOf(path, path.length-1))).mkdirs();
       File f = new File(fileName);
       f.createNewFile();
 
@@ -495,7 +596,7 @@ public class Genome extends Player {
       {
         s.append(n.toString() + "\n"); //ex.: input_1;
       }
-      s.deleteCharAt(s.length() - 1);
+      //s.deleteCharAt(s.length() - 1); DO I NEED THIS LINE?
       s.append("\n\n");
 
       //CONNECTIONS
@@ -575,6 +676,8 @@ public class Genome extends Player {
     }
 
     public List<Connection> getConnectionGenes() { return this.connectionGenes; }
+
+    public void setPopulation(Population p) { this.population = p; }
 
 
 
