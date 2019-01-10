@@ -38,6 +38,7 @@ public class Genome extends Player {
 
   private int fitness = 0;
   private boolean illegalMove = false;
+  private boolean knowsPossibleMoves = false;
 
   public Genome(String name, int playerNum, Board board, Population population) throws Exception
   {
@@ -437,13 +438,14 @@ public class Genome extends Player {
       }
       */
     } catch (Exception e) { /*e.printStackTrace();*/ System.out.println("Genome.getOutput() messed up");}
+
+    if (this.knowsPossibleMoves)
+    {
+      // ONLY POSSIBLE MOVES WILL BE MADE BY A GENOME;
+      return Matrix.componentMultiply(out,this.board.getPossibleMovesVector());
+    }
+
     return out;
-    /*
-    OPTIONAL:
-    return Matrix.componentMultiply(out,this.board.getPossibleMovesVector());
-    //THEN ONLY POSSIBLE MOVES WILL BE MADE BY A GENOME; BUT IT DOESN'T LEARN
-    //WHICH MOVES ARE POSSIBLE
-    */
   }
 
     @Override
@@ -686,6 +688,10 @@ public class Genome extends Player {
     public void setPopulation(Population p) { this.population = p; }
 
     public Population getPopulation() { return this.population; }
+
+    public boolean getKnowsPossibleMoves() { return this.knowsPossibleMoves; }
+
+    public void setKnowsPossibleMoves(boolean b) { this.knowsPossibleMoves = b; }
 
 
 

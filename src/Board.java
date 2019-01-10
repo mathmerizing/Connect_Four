@@ -280,4 +280,43 @@ public List<Pair> getMoveList()
   return this.moveList;
 }
 
+public void showBoard()
+{
+  Process p;
+  try {
+    String command = "python3 showBoard.py ";
+
+    StringBuilder red = new StringBuilder();
+    int redCount = 0;
+    StringBuilder yellow = new StringBuilder();
+    int yellowCount = 0;
+    for (int i = 0; i < this.ROWS; i++)
+    {
+            for (int j = 0; j < this.COLUMNS; j++)
+            {
+              if (this.boardState[i][j] == -1) {
+                redCount++;
+                if (red.length() != 0) { red.append("_"); }
+                red.append(i + "," + j);
+              } else if (this.boardState[i][j] == 1) {
+                yellowCount++;
+                if (yellow.length() != 0) { yellow.append("_"); }
+                yellow.append(i + "," + j);
+              }
+            }
+    }
+
+    if (redCount >= yellowCount) {
+      command += red.toString() + " " + yellow.toString();
+    }  else {
+      command += yellow.toString() + " " + red.toString();
+    }
+
+    p = Runtime.getRuntime().exec(command);
+    p.waitFor();
+  } catch (Exception e) {
+    e.printStackTrace();
+  }
+}
+
 }

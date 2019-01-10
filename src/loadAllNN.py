@@ -25,7 +25,7 @@ if __name__ == "__main__":
     txtFiles = []
     pickleFiles = []
     for f in os.listdir(directory):
-        if f.endswith(".txt"):
+        if f.endswith(".txt") and f != "stats.txt":
             txtFiles.append(f)
         elif f.endswith(".pickle"):
             pickleFiles.append(f)

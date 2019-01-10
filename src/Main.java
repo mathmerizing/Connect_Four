@@ -98,6 +98,8 @@ private static void gameLoop(Board board, Player[] players)
 
                                 System.out.println(player.getName() + "'s move:\n" + board);
 
+                                board.showBoard();
+
                                 gameOver = checkGameOver(board, player);
                         }
                 }
