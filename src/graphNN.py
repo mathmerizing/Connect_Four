@@ -62,7 +62,7 @@ def neatGraph(nodes,edges,fileName,showWeights = False, saveGraph = False, showG
     for inNode in inNodes:
         nodeDict[inNode] = 0
     for hidden in hiddenNodes:
-        nodeDict[hidden] = inLayer(DG,hidden,predecessorDict(enabled,inNodes+hiddenNodes+outNodes))
+        nodeDict[hidden] = inLayer(DG,hidden,predecessorDict(enabled+disabled,inNodes+hiddenNodes+outNodes))
     outputDepth = max(nodeDict.values()) + 1
     for outNode in outNodes:
         nodeDict[outNode] = outputDepth

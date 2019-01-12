@@ -26,8 +26,8 @@ public class Genome extends Player {
   private final double SHIFT_WEIGHT_MUTATION = 0.9;
   private final double NEW_WEIGHT_MUTATION = 0.1;
   private final double SLIGHT_MUTATION = 0.1;
-  private final double ADD_NODE_MUTATION = 0.03;
-  private final double ADD_CONNECTION_MUTATION = 0.1;
+  private final double ADD_NODE_MUTATION = 1.0;   // 0.03;
+  private final double ADD_CONNECTION_MUTATION = 1.0; // 0.1;
   private final double DISABLE_ENABLE_MUTATION = 0.3;
 
   private final double MU = 1.0;
@@ -212,9 +212,13 @@ public class Genome extends Player {
   }
 
   @SuppressWarnings("unchecked")
-  public void mutate()
+  public void mutate() throws Exception
   {
     Random generator = new Random();
+
+    System.out.println("BEFORE MUTATION:");
+    //this.save();
+    //this.saveGraph(false,true);
 
     // mutate connection weight
     if (generator.nextDouble() <= this.CONNECTION_WEIGHT_MUTATION)
@@ -228,6 +232,7 @@ public class Genome extends Player {
       } else {
         this.mutateNewConnectionWeight(randConnection);
       }
+      System.out.println("- MUTATED CONNECTION WEIGHT -");
     }
 
     // disable or enable connection
@@ -236,6 +241,7 @@ public class Genome extends Player {
       int randIndex = generator.nextInt(this.connectionGenes.size());
       Connection randConnection = this.connectionGenes.get(randIndex);
       this.mutateEnableDisableConnection(randConnection);
+      System.out.println("- MUTATED ENABLE / DISABLE -");
     }
 
     // add new connection
@@ -245,6 +251,7 @@ public class Genome extends Player {
       int randIndex1 = generator.nextInt(nodeNums.size());
       int randIndex2 = generator.nextInt(nodeNums.size());
       this.mutateAddConnection(nodeNums.get(randIndex1),nodeNums.get(randIndex2));
+      System.out.println("- MUTATED NEW CONNECTION -");
     }
 
     // add node
@@ -253,7 +260,12 @@ public class Genome extends Player {
       int randIndex = generator.nextInt(this.connectionGenes.size());
       Connection randConnection = this.connectionGenes.get(randIndex);
       this.mutateAddNode(randConnection);
+      System.out.println("- MUTATED NEW NODE -");
     }
+
+    System.out.println("AFTER MUTATION:");
+    //this.save();
+    //this.saveGraph(false,true);
 
   }
 
@@ -284,7 +296,11 @@ public class Genome extends Player {
       if (from == to) { return; }
       Node start = this.nodeGenes.get(from);
       Node end = this.nodeGenes.get(to);
-      if (end.getType() == "input" || connectionExists(start,end) || createsCycle(start,end)) { return; }
+      if (end.getType() == "input" || connectionExists(start,end) || createsCycle(start,end))
+      {
+        System.out.println("COULDN'T CREATE CONNECTION " + from + " -> " + to);
+        return;
+      }
       mutateAddConnection(start, end);
   }
 

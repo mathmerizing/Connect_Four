@@ -11,7 +11,7 @@ public class Species {
   private double cumulativeFitness = 0;
 
   private final double COMPATIBILITY_THRESHOLD = 4.0;
-  private final double ELITE_PERCENTAGE = 0.4;
+  private final double ELITE_PERCENTAGE = 1.0; //0.4;
   private final double RANDOM_PERCENTAGE = 0.1;
 
   public Species(int num)
