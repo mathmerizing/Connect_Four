@@ -16,6 +16,7 @@ public class Node {
     assert (type != "input" && type != "hidden" && type != "output");
     this.type = type;
     this.number = number;
+    System.out.println("Created " + this.toString());
   }
 
   public Node(Node other)
@@ -93,7 +94,7 @@ public class Node {
     System.err.println("value(" + this.number + ")");
     this.ingoing.forEach(c -> System.err.print(c + "; "));
     System.err.println(" ");
-    
+
 
     double sum = 0;
     for (Connection c : this.ingoing)
@@ -120,6 +121,22 @@ public class Node {
       if (c.getIsExpressed()) { out.add(c.getFromNode()); }
     }
     return out;
+  }
+
+  public int getDepth()
+  {
+    if (this.type == "input") {
+      return 0;
+    } else if (this.type == "output") {
+      return 100;
+    }
+    int lastDepth = -1;
+    for (Connection c : this.ingoing)
+    {
+      lastDepth = Math.max(c.getFromNode().getDepth(),lastDepth);
+    }
+    lastDepth++;
+    return lastDepth;
   }
 
   public List<Node> next()

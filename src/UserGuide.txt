@@ -3,7 +3,7 @@
 
 
 // -- LET JAVA MAKE ALL SIMULATIONS AND CALCULATIONS: --
-rm *.class;javac Train.java;java Train 040120192
+rm *.class;javac Train.java;java Train 040120192;while [ True ]; do spd-say "done";sleep 5; done
 
 // NOTE: THE NUMBER AT THE END CONSISTS OF:
 // (DD) TWO DIGITS FOR THE DAY OF THE MONTH

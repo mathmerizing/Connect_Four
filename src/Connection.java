@@ -19,6 +19,7 @@ public class Connection {
     this.weight = w;
     this.isExpressed = expressed;
     this.innovationNumber = innovation;
+    System.out.println("Created " + this.toString());
   }
 
   // mutationFactor should probably be in (0,1]

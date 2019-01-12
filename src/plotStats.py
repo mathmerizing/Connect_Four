@@ -43,7 +43,8 @@ def animate(i,fileName):
 
     ax1.legend(loc=4,fancybox=True, shadow=True)
     manager = plt.get_current_fig_manager()
-    manager.resize(*manager.window.maxsize())
+    manager.set_window_title("Statistics")
+    manager.resize(*[int(dim/2) for dim in manager.window.maxsize()])
 
 
 def showPlot(magicNumber,plotAll):

@@ -14,6 +14,7 @@ public class Population {
   private int globalInnovationNumber = 0;
   private int epoch = 0;
   private List<Connection> connectionHistory = new ArrayList<>();
+  private int globalNodeCount = 0;
 
   private final int TIE_SCORE = 176; // fitness of a genome that ties, references: Genome.calculateFitness()
 
@@ -156,6 +157,12 @@ public class Population {
   {
     if (num > this.globalInnovationNumber) { this.globalInnovationNumber = num; }
     return this.globalInnovationNumber;
+  }
+
+  public int updateGlobalNodeCount(int num)
+  {
+    if (num > this.globalNodeCount) { this.globalNodeCount = num; }
+    return this.globalNodeCount;
   }
 
   public void addConnection(Connection connection)

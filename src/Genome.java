@@ -15,19 +15,19 @@ public class Genome extends Player {
   private HashMap<Integer,Node> nodeGenes = new HashMap<>();
   private List<Connection> connectionGenes = new ArrayList<>();
   private int nodeCount = 0;
-  private int innovationNumber = 0; //DO I NEED THIS HERE???
+  private int innovationNumber = 0;
 
   private final int IN_NODES = 42;
   private final int OUT_NODES = 7;
 
-  private final int MAX_NODES = 200;
+  private final int MAX_NODES = 300;
 
   private final double CONNECTION_WEIGHT_MUTATION = 0.8;
   private final double SHIFT_WEIGHT_MUTATION = 0.9;
   private final double NEW_WEIGHT_MUTATION = 0.1;
   private final double SLIGHT_MUTATION = 0.1;
-  private final double ADD_NODE_MUTATION = 1.0;   // 0.03;
-  private final double ADD_CONNECTION_MUTATION = 1.0; // 0.1;
+  private final double ADD_NODE_MUTATION = 0.06;   // 0.03;
+  private final double ADD_CONNECTION_MUTATION = 0.1;
   private final double DISABLE_ENABLE_MUTATION = 0.3;
 
   private final double MU = 1.0;
@@ -85,8 +85,7 @@ public class Genome extends Player {
     }
 
     //create a bias node, which is being connected to all outputs
-    this.nodeCount++;
-    Node bias = new Node("input",this.nodeCount);
+    Node bias = new Node("input",nodeCountUp());
     this.nodeGenes.put(this.nodeCount,bias);
     for (int j = 1; j <= this.OUT_NODES; j++)
     {
@@ -96,6 +95,8 @@ public class Genome extends Player {
       bias.addOutGoing(temp);
       this.nodeGenes.get(this.IN_NODES + j).addInGoing(temp);
     }
+
+    updateNodeCount();
 
     //System.out.println("GENOME_CONSTRUCTOR_2; NUM_OF_GENES: " + this.connectionGenes.size());
 
@@ -148,7 +149,7 @@ public class Genome extends Player {
 
   public Genome crossover(Genome other) throws Exception //-------------------------------------------
   {
-    if (this.nodeCount >= this.MAX_NODES) { return new Genome(this); }
+    if (this.nodeGenes.values().size() >= this.MAX_NODES) { return new Genome(this); }
 
     Genome offspring; // needs to be created though both parents
     Genome strongerParent;
@@ -176,6 +177,8 @@ public class Genome extends Player {
         int fromNum = c.getFromNode().getNumber();
         int toNum = c.getToNode().getNumber();
 
+        boolean addedNewNode = false;
+
         //getFromNode
         Node from;
         if (offspring.nodeGenes.get(fromNum) != null)
@@ -196,9 +199,11 @@ public class Genome extends Player {
           to = new Node("hidden",toNum);
           offspring.nodeGenes.put(toNum,to);
           this.nodeCount++;
+          addedNewNode = true;
         }
 
-        if (!offspring.createsCycle(from,to))
+        System.out.println("Trying to create " + fromNum + " -> " + toNum);
+        if (offspring.nodeGenes.values().size() < this.MAX_NODES && (addedNewNode || from.getDepth() < to.getDepth()) && !offspring.createsCycle(from,to))
         {
           Connection clonedConnection = new Connection(from,to,c.getWeight(),c.getIsExpressed(),innovNum);
           offspring.connectionGenes.add(clonedConnection);
@@ -264,6 +269,7 @@ public class Genome extends Player {
     }
 
     System.out.println("AFTER MUTATION:");
+    //this.setName(this.getName() + "_muted");
     //this.save();
     //this.saveGraph(false,true);
 
@@ -296,7 +302,7 @@ public class Genome extends Player {
       if (from == to) { return; }
       Node start = this.nodeGenes.get(from);
       Node end = this.nodeGenes.get(to);
-      if (end.getType() == "input" || connectionExists(start,end) || createsCycle(start,end))
+      if (end.getType() == "input" || start.getType() == "output" || connectionExists(start,end) || start.getDepth() >= end.getDepth() || createsCycle(start,end))
       {
         System.out.println("COULDN'T CREATE CONNECTION " + from + " -> " + to);
         return;
@@ -313,16 +319,17 @@ public class Genome extends Player {
       start.addOutGoing(newConnection);
       end.addInGoing(newConnection);
       this.population.addConnection(newConnection);
+      updateInnovationNumber();
   }
 
   public void mutateAddNode(Connection oldConnection) //-----------------------------------------------------------
   {
-    if (this.nodeCount >= this.MAX_NODES) { return; }
+    if (this.nodeGenes.values().size() >= this.MAX_NODES) { return; }
     Node from = oldConnection.getFromNode();
     Node to = oldConnection.getToNode();
     oldConnection.disable();
-    this.nodeCount++;
-    Node middle = new Node("hidden",this.nodeCount);
+    updateNodeCount();
+    Node middle = new Node("hidden",nodeCountUp());
     this.nodeGenes.put(nodeCount,middle);
     updateInnovationNumber();
     int cInnov1 = this.population.getConnectionInnovation(from.getNumber(),middle.getNumber());
@@ -337,7 +344,12 @@ public class Genome extends Player {
     to.addInGoing(secondConnection);
     this.population.addConnection(firstConnection);
     this.population.addConnection(secondConnection);
+    updateInnovationNumber();
+    updateNodeCount();
   }
+
+  public void updateNodeCount() { this.nodeCount = this.population.updateGlobalNodeCount(this.nodeCount); }
+  public int nodeCountUp() { this.nodeCount++; return this.nodeCount; }
 
   public void updateInnovationNumber() { this.innovationNumber = this.population.updateGlobalInnovation(this.innovationNumber); }
   public int innovationUp() { this.innovationNumber++; return this.innovationNumber; } //--------------------
@@ -572,7 +584,7 @@ public class Genome extends Player {
     public String toString() {
             StringBuilder s = new StringBuilder();
             s.append(this.getName().toUpperCase() + "\n");
-            s.append(this.nodeCount + " nodes" + "\n\n");
+            s.append(this.nodeGenes.values().size() + " nodes" + "\n\n");
             s.append("NODES:" + "\n");
             for (Node n : this.nodeGenes.values())
             {
