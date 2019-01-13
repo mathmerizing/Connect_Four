@@ -1,5 +1,6 @@
 import pygame
 import sys
+import time
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -44,12 +45,16 @@ def addTilesToBoard(redTiles,yellowTiles):
 if __name__ == "__main__":
     pygame.init() # Initialize pygame
 
-    addTilesToBoard(sys.argv[1],sys.argv[2] if len(sys.argv) == 3 else "")
+    addTilesToBoard(sys.argv[1],sys.argv[2] if sys.argv[2] != "-timer" else "")
+    timer = False
+    if ("-timer" in sys.argv): timer = True
 
     screen = pygame.display.set_mode([180, 155]) # set the screen size
     pygame.display.set_caption("Board")
     done = False
     clock = pygame.time.Clock()
+    startTime = time.time()
+    print(f"start time: {startTime}")
 
     while not done:
         for event in pygame.event.get():
@@ -78,5 +83,11 @@ if __name__ == "__main__":
 
         # update screen
         pygame.display.flip()
+
+        # check if time is up
+        currTime = time.time()
+        print(f"curr time: {currTime}")
+        if (timer and currTime - startTime >= 2):
+            done = True
 
     pygame.quit()

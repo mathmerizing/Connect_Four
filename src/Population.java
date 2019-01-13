@@ -125,7 +125,8 @@ public class Population {
         opponentCopy.setName("Genome_OPPONENT");
       }
 
-      if ((new Random()).nextBoolean()) { opponentCopy.move(genome.getBoard()); }
+      boolean opponentStarts = (new Random()).nextBoolean();
+      if (opponentStarts) { opponentCopy.move(genome.getBoard()); }
       while (genome.getBoard().getPossibleMoves().length != 0)
       {
         //genome moves
@@ -139,6 +140,11 @@ public class Population {
         }
       }
       genome.calculateFitness();
+      // showing all games in which the genome wins against the opponent
+      if (genome.getFitness() >= 200)
+      {
+        Board.replay((opponentStarts) ? opponent.getName() : genome.getName(), (!opponentStarts) ? opponent.getName() : genome.getName() ,genome.getBoard().getMoveList());
+      }
     }
   }
 

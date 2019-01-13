@@ -263,12 +263,14 @@ public static void replay(String player1, String player2, List<Pair> moveList) t
                 System.out.println(player1 + "'s move:");
                 b.nextMove(1,moveList.remove(0).getSecond());
                 System.out.println(b);
+                b.showBoard();
 
                 if (!moveList.isEmpty())
                 {
                         System.out.println(player2 + "'s move:");
                         b.nextMove(-1,moveList.remove(0).getSecond());
                         System.out.println(b);
+                        b.showBoard();
                 }
         }
 }
@@ -280,7 +282,9 @@ public List<Pair> getMoveList()
   return this.moveList;
 }
 
-public void showBoard()
+public void showBoard() { showBoard(true); }
+
+public void showBoard(boolean timer)
 {
   Process p;
   try {
@@ -306,11 +310,13 @@ public void showBoard()
             }
     }
 
-    if (redCount >= yellowCount) {
+    if (redCount > yellowCount) {
       command += red.toString() + " " + yellow.toString();
     }  else {
       command += yellow.toString() + " " + red.toString();
     }
+
+    if (timer) { command += " -timer"; }
 
     p = Runtime.getRuntime().exec(command);
     p.waitFor();
