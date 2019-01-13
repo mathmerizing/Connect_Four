@@ -82,7 +82,7 @@ Exception
         gameLoop(board, players);
 }
 
-private static void gameLoop(Board board, Player[] players)
+public static void gameLoop(Board board, Player[] players)
 {
         while (!gameOver)
         {

@@ -279,5 +279,10 @@ private int connectedStrength(Board board)
         return total;
 }
 
+public int getDepth()
+{
+  return this.depth;
+}
+
 
 }

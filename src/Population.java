@@ -15,8 +15,10 @@ public class Population {
   private int epoch = 0;
   private List<Connection> connectionHistory = new ArrayList<>();
   private int globalNodeCount = 0;
+  private Player opponent = new Minimax(1,new Board(),4);
 
   private final int TIE_SCORE = 176; // fitness of a genome that ties, references: Genome.calculateFitness()
+  private final int OPPONENT_UPDATE_INTERVAL = 5;
 
   public Population(int size) throws Exception
   {
@@ -56,6 +58,7 @@ public class Population {
     this.printPerformance();
 
     if (saveBest) { best.setName(magicNumber + "/Genome_" + magicNumber + "_" + epoch); System.out.println(best.getName()); best.save(); best.saveGraph(); saveStats(magicNumber); }
+    this.updateOpponent(best);
 
     List<Species> speciesList = new ArrayList<>();
     for (Genome g : this.genomes)
@@ -106,14 +109,23 @@ public class Population {
 
   }
 
-  public void play() throws Exception { play(4); }
-
-  public void play(int depth) throws Exception
+  public void play() throws Exception
   {
     for (Genome genome : this.genomes)
     {
-      Minimax minimax = new Minimax(1,genome.getBoard(),depth);
-      if ((new Random()).nextBoolean()) { minimax.move(genome.getBoard()); }
+      System.out.println("OPPONENT IS " + ((!(this.opponent instanceof Minimax)) ? "NOT ": "" ) +"OF TYPE MINIMAX.");
+      // clone the opponent
+      Player opponentCopy = new Human("bla",2,new Board()); // ONLY TEMPORARILY
+      if (this.opponent instanceof Minimax) {
+         opponentCopy = new Minimax(1,genome.getBoard(),((Minimax)this.opponent).getDepth());
+         System.out.println("created Minimax copy");
+      } else if (this.opponent instanceof Genome) {
+        opponentCopy = new Genome(((Genome)this.opponent),genome.getBoard(),1);
+        ((Genome)opponentCopy).setKnowsPossibleMoves(true);
+        opponentCopy.setName("Genome_OPPONENT");
+      }
+
+      if ((new Random()).nextBoolean()) { opponentCopy.move(genome.getBoard()); }
       while (genome.getBoard().getPossibleMoves().length != 0)
       {
         //genome moves
@@ -123,7 +135,7 @@ public class Population {
         //if the game is not over minimax should move
         if (genome.getBoard().getPossibleMoves().length != 0)
         {
-          minimax.move(genome.getBoard());
+          opponentCopy.move(genome.getBoard());
         }
       }
       genome.calculateFitness();
@@ -220,6 +232,7 @@ public class Population {
     double tiePerc = performance.get(1).doubleValue();
     double lossPerc = performance.get(2).doubleValue();
 
+    System.out.println("OPPONENT: " + this.opponent.getName());
     System.out.println(" > PERFORMANCE < ");
     System.out.println("\t WIN:  " + winPerc + " %");
     System.out.println("\t TIE:  " + tiePerc + " %");
@@ -289,6 +302,29 @@ public class Population {
   private double calculateUpperQuartile(double[] data) {
         int j = (int) Math.floor( (data.length - 1.0) / 4.0 );
         return data[j];
+  }
+
+  private void updateOpponent(Genome bestGenome) throws Exception
+  {
+    if ((this.epoch % this.OPPONENT_UPDATE_INTERVAL) == 0)
+    {
+      if (this.opponent instanceof Minimax) {
+        double[] fitnessValues = new double[this.size];
+        List<Genome> sortedGenomes = this.sortedByFitness();
+        for (int i = 0; i < this.size; i++) { fitnessValues[i] = sortedGenomes.get(i).getFitness(); }
+
+        double maxFit = calculateMax(fitnessValues);
+        if (maxFit >= this.TIE_SCORE)
+        {
+          this.opponent = new Genome(bestGenome);
+          System.out.println(" ----- NEW OPPONENT ----- ");
+        }
+      } else {
+        // opponent is already a genome
+        this.opponent = new Genome(bestGenome);
+        System.out.println(" ----- NEW OPPONENT ----- ");
+      }
+    }
   }
 
 

@@ -107,10 +107,15 @@ public class Genome extends Player {
     this(other, new Board());
   }
 
-  //copy constructor
-  public Genome(Genome other, Board board) throws Exception //----------------------------------------------
+  public Genome(Genome other,Board board) throws Exception
   {
-    super("Genome_" +  String.valueOf((new Random()).nextInt()),other.getPlayerNum(),board);
+    this(other,board,other.getPlayerNum());
+  }
+
+  //copy constructor
+  public Genome(Genome other, Board board, int playerNum) throws Exception //----------------------------------------------
+  {
+    super("Genome_" +  String.valueOf((new Random()).nextInt()),playerNum,board);
 
     this.board = board;
     this.population = other.population;
@@ -667,6 +672,7 @@ public class Genome extends Player {
       }
 
       //convert the String out into a Genome
+      System.out.println(out);
       String[] parts = out.split("\n\n");
 
       // part 1: name, part 2: nodes, part 3: connections
@@ -675,18 +681,24 @@ public class Genome extends Player {
       String genomeName = parts[0];
       obj = new Genome(genomeName, playerNum, new Board(), population);
 
+      System.out.println("LOAD (PART 1): COMPLETED.");
+
       // part 2
       for (String subPart : parts[1].split("\n"))
       {
+        if (subPart.equals("")) { continue; }
         String[] variables = subPart.split("_");
         obj.nodeCount++;
         int nodeNumber = Integer.parseInt(variables[1]);
         obj.nodeGenes.put(nodeNumber,new Node(variables[0],nodeNumber));
       }
 
+      System.out.println("LOAD (PART 2): COMPLETED.");
+
       // part 3
       for (String subPart : parts[2].split("\n"))
       {
+        if (subPart.equals("")) { continue; }
         String[] variables = subPart.split("_");
 
         int fromNum = Integer.parseInt(variables[0]);
@@ -701,6 +713,8 @@ public class Genome extends Player {
                               obj.nodeGenes.get(toNum),
                               weight, isExpressed, innovation ) );
       }
+
+      System.out.println("LOAD (PART 3): COMPLETED.");
 
       //set in- and outgoing connections of the nodes
       for (Node n : obj.nodeGenes.values())

@@ -21,14 +21,15 @@ rm *.class;javac Train.java;java Train 040120192;while [ True ]; do spd-say "don
 // 040120192 TURNS INTO 40120192 !!!
 
 
+// -- PLAY AGAINST A SAVED NETWORK: --
+rm *.class;javac Test.java;java Test 40120192/Genome_40120192_10;while [ True ]; do spd-say "done";sleep 5; done
+
 
 // -- SHOW THE GRAPH OF 1 NETWORK: --
 python3 loadNN.py 40120192/Genome_40120192_10.pickle
 
-
-
 // -- GET MORE INFORMATION ABOUT A GRAPH: --
-python3 grphNN.py 40120192/Genome_40120192_10.txt
+python3 graphNN.py 40120192/Genome_40120192_10.txt
 
 // POSSIBLE ARGUMENTS:
 // -saveGraph: creates .pickle file (already called in Train.java)
@@ -40,7 +41,8 @@ python3 grphNN.py 40120192/Genome_40120192_10.txt
 // -- SHOW ALL GRAPHS OF ONE SIMULATION: --
 python3 loadAllNN.py 40120192
 
-
+// -- SHOW THE NEWEST GRAPH OF THE SIMULATION: --
+python3 loadNewestNN.py 40120192
 
 // -- PLOT STATISTICS (OF FITNESSES) OF SIMULATION: --
 python3 plotStats.py 40120192
