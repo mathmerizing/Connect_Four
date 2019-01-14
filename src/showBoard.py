@@ -45,7 +45,7 @@ def addTilesToBoard(redTiles,yellowTiles):
 if __name__ == "__main__":
     pygame.init() # Initialize pygame
 
-    addTilesToBoard(sys.argv[1],sys.argv[2] if sys.argv[2] != "-timer" else "")
+    addTilesToBoard(sys.argv[1],sys.argv[2] if len(sys.argv) >= 3 and sys.argv[2] != "-timer" else "")
     timer = False
     if ("-timer" in sys.argv): timer = True
 

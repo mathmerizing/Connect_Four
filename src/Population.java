@@ -16,6 +16,7 @@ public class Population {
   private List<Connection> connectionHistory = new ArrayList<>();
   private int globalNodeCount = 0;
   private Player opponent = new Minimax(1,new Board(),4);
+  private boolean moreThanOneWinner = false;
 
   private final int TIE_SCORE = 176; // fitness of a genome that ties, references: Genome.calculateFitness()
   private final int OPPONENT_UPDATE_INTERVAL = 5;
@@ -67,6 +68,7 @@ public class Population {
     }
 
     System.out.println("Number of Species: " + speciesList.size());
+    /*
     for (Species s : speciesList)
     {
       System.out.println("Species" + s.getSpeciesNum() + ": ");
@@ -75,6 +77,7 @@ public class Population {
         System.out.println(g.getName());
       }
     }
+    */
 
     /*
     System.out.println("BEFORE REPRODUCTION: ");
@@ -113,37 +116,64 @@ public class Population {
   {
     for (Genome genome : this.genomes)
     {
-      System.out.println("OPPONENT IS " + ((!(this.opponent instanceof Minimax)) ? "NOT ": "" ) +"OF TYPE MINIMAX.");
+      //System.out.println("OPPONENT IS " + ((!(this.opponent instanceof Minimax)) ? "NOT ": "" ) +"OF TYPE MINIMAX.");
       // clone the opponent
       Player opponentCopy = new Human("bla",2,new Board()); // ONLY TEMPORARILY
       if (this.opponent instanceof Minimax) {
          opponentCopy = new Minimax(1,genome.getBoard(),((Minimax)this.opponent).getDepth());
-         System.out.println("created Minimax copy");
+         //System.out.println("created Minimax copy");
       } else if (this.opponent instanceof Genome) {
         opponentCopy = new Genome(((Genome)this.opponent),genome.getBoard(),1);
         ((Genome)opponentCopy).setKnowsPossibleMoves(true);
         opponentCopy.setName("Genome_OPPONENT");
       }
 
-      boolean opponentStarts = (new Random()).nextBoolean();
-      if (opponentStarts) { opponentCopy.move(genome.getBoard()); }
+      Player[] players = new Player[2];
+      if (new Random().nextBoolean())
+      {
+        players[0] = opponentCopy;
+        players[1] = genome;
+      } else {
+        players[0] = genome;
+        players[1] = opponentCopy;
+      }
+      //System.out.println("\nRED: " + players[0].getName() + "\t YELLOW: " + players[1].getName());
       while (genome.getBoard().getPossibleMoves().length != 0)
       {
-        //genome moves
-        genome.move(genome.getBoard());
-        //did the genome make an illegalMove
-        if (genome.getIllegalMove()) { break; }
-        //if the game is not over minimax should move
-        if (genome.getBoard().getPossibleMoves().length != 0)
+        if (genome.getIllegalMove()) { /*System.out.println("ILLEGAL MOVE!");*/break; }
+        for (Player p : players)
         {
-          opponentCopy.move(genome.getBoard());
+          //Player p moves
+          p.move(genome.getBoard());
+
+          //genome.getBoard().showBoard(); // VISUALIZATION !!!
+
+          //did the genome make an illegalMove
+          if (genome.getIllegalMove()) { break; }
+          //if the game is not over minimax should move
+          if (genome.getBoard().getPossibleMoves().length == 0)
+          {
+            break;
+          }
         }
       }
+      /*
+      if (!genome.getIllegalMove())
+      {
+        System.out.print("WINNER: ");
+        int winner = genome.getBoard().getWinner();
+        for (Player p : players)
+        {
+          if (p.getPlayerNum() == winner) { System.out.println(p.getName() + "\n"); }
+        }
+      }
+      */
       genome.calculateFitness();
       // showing all games in which the genome wins against the opponent
-      if (genome.getFitness() >= 200)
+      if (genome.getFitness() >= 200 && moreThanOneWinner == false)
       {
-        Board.replay((opponentStarts) ? opponent.getName() : genome.getName(), (!opponentStarts) ? opponent.getName() : genome.getName() ,genome.getBoard().getMoveList());
+        moreThanOneWinner = true;
+        Board.replay(players[0].getName(), players[1].getName() ,genome.getBoard().getMoveList());
       }
     }
   }

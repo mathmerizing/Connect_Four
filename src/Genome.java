@@ -61,6 +61,8 @@ public class Genome extends Player {
     this.board = board;
     this.population = population;
 
+    Random generator = new Random();
+
     for (int i = 1; i <= this.IN_NODES; i++)
     {
       this.nodeCount++;
@@ -77,7 +79,7 @@ public class Genome extends Player {
       {
           Connection temp = new Connection( this.nodeGenes.get(i),
                                             this.nodeGenes.get(this.IN_NODES + j),
-                                            true,true,innovationUp() );
+                                            generator.nextBoolean(),generator.nextBoolean(),innovationUp() );
           this.connectionGenes.add(temp);
           temp.getFromNode().addOutGoing(temp);
           temp.getToNode().addInGoing(temp);
@@ -207,7 +209,7 @@ public class Genome extends Player {
           addedNewNode = true;
         }
 
-        System.out.println("Trying to create " + fromNum + " -> " + toNum);
+        //System.out.println("Trying to create " + fromNum + " -> " + toNum);
         if (offspring.nodeGenes.values().size() < this.MAX_NODES && (addedNewNode || from.getDepth() < to.getDepth()) && !offspring.createsCycle(from,to))
         {
           Connection clonedConnection = new Connection(from,to,c.getWeight(),c.getIsExpressed(),innovNum);
@@ -226,7 +228,7 @@ public class Genome extends Player {
   {
     Random generator = new Random();
 
-    System.out.println("BEFORE MUTATION:");
+    //System.out.println("BEFORE MUTATION:");
     //this.save();
     //this.saveGraph(false,true);
 
@@ -242,7 +244,7 @@ public class Genome extends Player {
       } else {
         this.mutateNewConnectionWeight(randConnection);
       }
-      System.out.println("- MUTATED CONNECTION WEIGHT -");
+      //System.out.println("- MUTATED CONNECTION WEIGHT -");
     }
 
     // disable or enable connection
@@ -251,7 +253,7 @@ public class Genome extends Player {
       int randIndex = generator.nextInt(this.connectionGenes.size());
       Connection randConnection = this.connectionGenes.get(randIndex);
       this.mutateEnableDisableConnection(randConnection);
-      System.out.println("- MUTATED ENABLE / DISABLE -");
+      //System.out.println("- MUTATED ENABLE / DISABLE -");
     }
 
     // add new connection
@@ -261,7 +263,7 @@ public class Genome extends Player {
       int randIndex1 = generator.nextInt(nodeNums.size());
       int randIndex2 = generator.nextInt(nodeNums.size());
       this.mutateAddConnection(nodeNums.get(randIndex1),nodeNums.get(randIndex2));
-      System.out.println("- MUTATED NEW CONNECTION -");
+      //System.out.println("- MUTATED NEW CONNECTION -");
     }
 
     // add node
@@ -270,10 +272,10 @@ public class Genome extends Player {
       int randIndex = generator.nextInt(this.connectionGenes.size());
       Connection randConnection = this.connectionGenes.get(randIndex);
       this.mutateAddNode(randConnection);
-      System.out.println("- MUTATED NEW NODE -");
+      //System.out.println("- MUTATED NEW NODE -");
     }
 
-    System.out.println("AFTER MUTATION:");
+    //System.out.println("AFTER MUTATION:");
     //this.setName(this.getName() + "_muted");
     //this.save();
     //this.saveGraph(false,true);
@@ -309,7 +311,7 @@ public class Genome extends Player {
       Node end = this.nodeGenes.get(to);
       if (end.getType() == "input" || start.getType() == "output" || connectionExists(start,end) || start.getDepth() >= end.getDepth() || createsCycle(start,end))
       {
-        System.out.println("COULDN'T CREATE CONNECTION " + from + " -> " + to);
+        //System.out.println("COULDN'T CREATE CONNECTION " + from + " -> " + to);
         return;
       }
       mutateAddConnection(start, end);
@@ -486,7 +488,7 @@ public class Genome extends Player {
     {
       setInput();
       int move = Matrix.argmax(getOutput());
-      System.out.println(this.getName() + ": " + move);
+      //System.out.println(this.getName() + ": " + move); // MOVE INFO !!!
       //System.out.println(this);
       resetAllValueCalculated(); //DO I NEED THIS LINE ?
       try {

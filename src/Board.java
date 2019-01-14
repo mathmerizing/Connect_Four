@@ -15,7 +15,7 @@ private Stack<String> availableTiles = new Stack<>();
 private HashMap<Integer,String> tiles = new HashMap<>(2);
 private int moves = 0;
 List<Pair> moveList = new ArrayList<>();
-private int winner;
+private int winner = 0;
 
 Board()
 {
@@ -292,17 +292,28 @@ public void showBoard(boolean timer)
 
     StringBuilder red = new StringBuilder();
     int redCount = 0;
+    Pair firstMove = this.moveList.get(0);
+    int redTileNumber = this.boardState[firstMove.getFirst()][firstMove.getSecond()];
+
     StringBuilder yellow = new StringBuilder();
     int yellowCount = 0;
+
+    int yellowTileNumber = Integer.MAX_VALUE;
+    if (this.moveList.size() >= 2)
+    {
+      Pair secondMove = this.moveList.get(1);
+      yellowTileNumber = this.boardState[secondMove.getFirst()][secondMove.getSecond()];
+    }
+
     for (int i = 0; i < this.ROWS; i++)
     {
             for (int j = 0; j < this.COLUMNS; j++)
             {
-              if (this.boardState[i][j] == -1) {
+              if (this.boardState[i][j] == redTileNumber) {
                 redCount++;
                 if (red.length() != 0) { red.append("_"); }
                 red.append(i + "," + j);
-              } else if (this.boardState[i][j] == 1) {
+              } else if (this.boardState[i][j] == yellowTileNumber) {
                 yellowCount++;
                 if (yellow.length() != 0) { yellow.append("_"); }
                 yellow.append(i + "," + j);
@@ -310,11 +321,7 @@ public void showBoard(boolean timer)
             }
     }
 
-    if (redCount > yellowCount) {
-      command += red.toString() + " " + yellow.toString();
-    }  else {
-      command += yellow.toString() + " " + red.toString();
-    }
+    command += red.toString() + " " + yellow.toString();
 
     if (timer) { command += " -timer"; }
 

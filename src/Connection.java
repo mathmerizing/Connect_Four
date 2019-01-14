@@ -9,7 +9,7 @@ public class Connection {
 
   public Connection(Node from, Node to, boolean randomWeight, boolean expressed, int innovation)
   {
-      this(from,to,new Random().nextGaussian(),expressed,innovation);
+      this(from,to,(randomWeight) ? new Random().nextGaussian() : 0,expressed,innovation);
   }
 
   public Connection(Node from, Node to, double w, boolean expressed, int innovation)
@@ -19,7 +19,7 @@ public class Connection {
     this.weight = w;
     this.isExpressed = expressed;
     this.innovationNumber = innovation;
-    System.out.println("Created " + this.toString());
+    //System.out.println("Created " + this.toString());
   }
 
   // mutationFactor should probably be in (0,1]

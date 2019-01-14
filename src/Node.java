@@ -16,7 +16,7 @@ public class Node {
     assert (type != "input" && type != "hidden" && type != "output");
     this.type = type;
     this.number = number;
-    System.out.println("Created " + this.toString());
+    //System.out.println("Created " + this.toString());
   }
 
   public Node(Node other)
@@ -91,9 +91,9 @@ public class Node {
     if (this.valueCalculated) { return this.value; };
 
 
-    System.err.println("value(" + this.number + ")");
-    this.ingoing.forEach(c -> System.err.print(c + "; "));
-    System.err.println(" ");
+    //System.err.println("value(" + this.number + ")");
+    //this.ingoing.forEach(c -> System.err.print(c + "; "));
+    //System.err.println(" ");
 
 
     double sum = 0;
