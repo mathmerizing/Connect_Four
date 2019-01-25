@@ -20,6 +20,7 @@ public class Population {
 
   private final int TIE_SCORE = 176; // fitness of a genome that ties, references: Genome.calculateFitness()
   private final int OPPONENT_UPDATE_INTERVAL = 5;
+  private final boolean ALLOW_GENOME_OPPONENT = false;
 
   public Population(int size) throws Exception
   {
@@ -174,6 +175,7 @@ public class Population {
       {
         moreThanOneWinner = true;
         Board.replay(players[0].getName(), players[1].getName() ,genome.getBoard().getMoveList());
+        System.exit(0);
       }
     }
   }
@@ -342,7 +344,7 @@ public class Population {
 
   private void updateOpponent(Genome bestGenome) throws Exception
   {
-    if ((this.epoch % this.OPPONENT_UPDATE_INTERVAL) == 0)
+    if ((this.epoch % this.OPPONENT_UPDATE_INTERVAL) == 0 && this.ALLOW_GENOME_OPPONENT)
     {
       if (this.opponent instanceof Minimax) {
         double[] fitnessValues = new double[this.size];

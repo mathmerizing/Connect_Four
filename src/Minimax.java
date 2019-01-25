@@ -164,11 +164,11 @@ private int evaluate(Board board, boolean maximizingPlayer)
         {
                 if (maximizingPlayer)
                 {
-                        return Integer.MIN_VALUE;
+                        return Integer.MIN_VALUE + board.getMoves();
                 }
                 else
                 {
-                        return Integer.MAX_VALUE;
+                        return Integer.MAX_VALUE - board.getMoves();
                 }
         }
         else if (board.getPossibleMoves().length == 0)

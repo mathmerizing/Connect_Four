@@ -28,6 +28,7 @@ Board()
 Board copy()
 {
         Board out = new Board();
+        out.moves = this.getMoves();
         out.setBoardState(this);
         out.tiles = (HashMap) this.tiles.clone();
         return out;
