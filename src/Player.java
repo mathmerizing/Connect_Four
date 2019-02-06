@@ -21,6 +21,17 @@ abstract class Player
 
     public abstract void move(Board board);
 
+    public void move(Board board, int column) {
+      try
+      {
+          board.nextMove(this.playerNum, column);
+      }
+      catch (Exception e)
+      {
+          e.printStackTrace();
+      }
+    }
+
     public String getName()
     {
         return this.name;

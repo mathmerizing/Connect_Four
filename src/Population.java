@@ -18,6 +18,10 @@ public class Population {
   private Player opponent = new Minimax(1,new Board(),4);
   private boolean moreThanOneWinner = false;
 
+  //hardcoded moves for both opponents
+  private List<List<Integer>> startingMoves = new ArrayList<>();
+  private List<List<Integer>> notStartingMoves = new ArrayList<>();
+
   private final int TIE_SCORE = 176; // fitness of a genome that ties, references: Genome.calculateFitness()
   private final int OPPONENT_UPDATE_INTERVAL = 5;
   private final boolean ALLOW_GENOME_OPPONENT = false;
@@ -30,6 +34,7 @@ public class Population {
     {
       this.genomes[i] = new Genome(-1, this);
     }
+    this.hardcodeMoves();
   }
 
 // fill an entire population with one genome
@@ -53,11 +58,11 @@ public class Population {
     this.calculateCumulativeFitness();
     double averageFitness = this.getAverageFitness();
     Genome best = this.sortedByFitness().get(0);
-    this.sortedByFitness().forEach(g -> System.out.println(g.getName()  + ": " + g.getFitness()));
+    //this.sortedByFitness().forEach(g -> System.out.println(g.getName()  + ": " + g.getFitness()));
 
     System.out.println("Highest Fitness: " + best.getFitness());
     System.out.println("Average Fitness: " + averageFitness);
-    this.printPerformance();
+    this.printPerformance(magicNumber);
 
     if (saveBest) { best.setName(magicNumber + "/Genome_" + magicNumber + "_" + epoch); System.out.println(best.getName()); best.save(); best.saveGraph(); saveStats(magicNumber); }
     this.updateOpponent(best);
@@ -115,8 +120,20 @@ public class Population {
 
   public void play() throws Exception
   {
+    boolean starts = new Random().nextBoolean();
+    List<Integer> firstMoves = new ArrayList<>();
+    int wincount = 0;
+
+    if (starts) {
+      if (!startingMoves.isEmpty()) { firstMoves.addAll(startingMoves.remove(0)); }
+    } else {
+      if (!notStartingMoves.isEmpty()) { firstMoves.addAll(notStartingMoves.remove(0)); }
+    }
+
     for (Genome genome : this.genomes)
     {
+      List<Integer> hardcodedMoves = new ArrayList<>(firstMoves);
+
       //System.out.println("OPPONENT IS " + ((!(this.opponent instanceof Minimax)) ? "NOT ": "" ) +"OF TYPE MINIMAX.");
       // clone the opponent
       Player opponentCopy = new Human("bla",2,new Board()); // ONLY TEMPORARILY
@@ -130,7 +147,8 @@ public class Population {
       }
 
       Player[] players = new Player[2];
-      if (new Random().nextBoolean())
+
+      if (!starts)
       {
         players[0] = opponentCopy;
         players[1] = genome;
@@ -138,6 +156,12 @@ public class Population {
         players[0] = genome;
         players[1] = opponentCopy;
       }
+      while (!hardcodedMoves.isEmpty()) {
+        players[0].move(genome.getBoard(),hardcodedMoves.remove(0).intValue());
+        players[1].move(genome.getBoard(),hardcodedMoves.remove(0).intValue());
+      }
+
+
       //System.out.println("\nRED: " + players[0].getName() + "\t YELLOW: " + players[1].getName());
       while (genome.getBoard().getPossibleMoves().length != 0)
       {
@@ -170,12 +194,24 @@ public class Population {
       }
       */
       genome.calculateFitness();
+
+      if (genome.getFitness() >= 200) { wincount++; }
+
       // showing all games in which the genome wins against the opponent
       if (genome.getFitness() >= 200 && moreThanOneWinner == false)
       {
         moreThanOneWinner = true;
         Board.replay(players[0].getName(), players[1].getName() ,genome.getBoard().getMoveList());
-        System.exit(0);
+        //System.exit(0);
+      }
+    }
+
+    if (wincount < 0.6 * this.size ) {
+      System.out.println("first moves: " + firstMoves);
+      if (starts) {
+        startingMoves.add(0,firstMoves);
+      } else {
+        notStartingMoves.add(0,firstMoves);
       }
     }
   }
@@ -263,7 +299,7 @@ public class Population {
     return out;
   }
 
-  public void printPerformance()
+  public void printPerformance(long magicNumber)
   {
     List<Double> performance = this.getPerformance();
     double winPerc = performance.get(0).doubleValue();
@@ -275,6 +311,8 @@ public class Population {
     System.out.println("\t WIN:  " + winPerc + " %");
     System.out.println("\t TIE:  " + tiePerc + " %");
     System.out.println("\t LOSS: " + lossPerc + " %");
+
+    savePerformance(magicNumber,winPerc,tiePerc,lossPerc);
   }
 
   public void saveStats(long magicNumber)
@@ -317,6 +355,38 @@ public class Population {
       e.printStackTrace();
     }
 
+  }
+
+  public void savePerformance(long magicNumber,double winPerc,double tiePerc,double lossPerc) {
+    String fileName = "./saved/" + magicNumber + "/performance.txt";
+    String[] path = fileName.split("/");
+    new File(String.join("/",Arrays.copyOf(path, path.length-1))).mkdirs();
+    File f = new File(fileName);
+
+    StringBuilder s = new StringBuilder();
+
+    try {
+      if (f.createNewFile()) {
+        //File is created
+        //do nothing
+      } else {
+        //File already exists
+        s.append("\n\n");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.out.println(f.getName() + f.exists());
+    }
+
+    s.append(winPerc + "\n" + tiePerc + "\n" + lossPerc);
+
+    try {
+      FileWriter writer = new FileWriter(f,true);
+      writer.write(s.toString());
+      writer.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   private double calculateMin(double[] data) {
@@ -363,6 +433,39 @@ public class Population {
         System.out.println(" ----- NEW OPPONENT ----- ");
       }
     }
+  }
+
+  private void hardcodeMoves() {
+
+     // genome is first
+     startingMoves.add(Arrays.asList(new Integer[] {3,3,2,2,4,4}));
+     startingMoves.add(inverse(Arrays.asList(new Integer[] {3,3,2,2,4,4})));
+     startingMoves.add(Arrays.asList(new Integer[] {3,4,3,4,3,4}));
+     startingMoves.add(inverse(Arrays.asList(new Integer[] {3,4,3,4,3,4})));
+     startingMoves.add(Arrays.asList(new Integer[] {3,3,2,2,4,4,3,5}));
+     startingMoves.add(inverse(Arrays.asList(new Integer[] {3,3,2,2,4,4,3,5})));
+     startingMoves.add(Arrays.asList(new Integer[] {2,3,3,4,5,4,4,5,3,5}));
+     startingMoves.add(inverse(Arrays.asList(new Integer[] {2,3,3,4,5,4,4,5,3,5})));
+
+     // genome is second
+     notStartingMoves.add(Arrays.asList(new Integer[] {6,3,3,4,4,2}));
+     notStartingMoves.add(inverse(Arrays.asList(new Integer[] {6,3,3,4,4,2})));
+     notStartingMoves.add(Arrays.asList(new Integer[] {6,3,3,4,4,2,6,6}));
+     notStartingMoves.add(inverse(Arrays.asList(new Integer[] {6,3,3,4,4,2,6,6})));
+     notStartingMoves.add(Arrays.asList(new Integer[] {3,4,4,3,2,3,2,2,5,4,5,3}));
+     notStartingMoves.add(inverse(Arrays.asList(new Integer[] {3,4,4,3,2,3,2,2,5,4,5,3})));
+     notStartingMoves.add(Arrays.asList(new Integer[] {3,3,4,2,5,6,5,5,6,5,1,2,0,1}));
+     notStartingMoves.add(inverse(Arrays.asList(new Integer[] {3,3,4,2,5,6,5,5,6,5,1,2,0,1})));
+  }
+
+  private List<Integer> inverse(List<Integer> original)
+  {
+      List<Integer> inverted = new ArrayList<>();
+      for (Integer o : original)
+      {
+          inverted.add(6-o.intValue());
+      }
+      return inverted;
   }
 
 
