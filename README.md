@@ -1,6 +1,6 @@
 # Four In A Row
 *by Yerso Checya Sinti and Julian Roth* <br><br>
-A Java version of the game "Four In A Row". Learning about Minimax and Alpha-beta pruning.
+A Java version of the game "Four In A Row". Learning about Minimax, Alpha-beta pruning and NEAT.
 
 ## OUR FOUR IN A ROW APP:
 <a href="https://play.google.com/store/apps/details?id=com.mathmerizing.fourinarow"><img src="https://github.com/mathmerizing/Four_In_A_Row/blob/master/documentation/Main_Menu.jpg" width="300"></a>
