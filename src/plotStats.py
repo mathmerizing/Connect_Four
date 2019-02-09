@@ -37,13 +37,13 @@ def animate(i,fileName):
 
     #Apply a Savitzky-Golay filter to the maximum array.
     ax1.scatter(x,maxs,c = 'green',marker = '+',s = 10, alpha = ALPHA)
-    ax1.plot(x, savgol_filter(maxs, 51, 3), color='green',label='maximum')
+    ax1.plot(x, savgol_filter(maxs, min(51,len(L)-(len(L)+1)%2), 3), color='green',label='maximum')
     if (plotAll):
-        ax1.plot(x, savgol_filter(uppers, 51, 3), color='blue',label='upper quartile',alpha = ALPHA)
-        ax1.plot(x, savgol_filter(medians, 51, 3), color='orange',label='median',alpha = ALPHA)
-        ax1.plot(x, savgol_filter(lowers, 51, 3), color='purple',label='lower quartile',alpha = ALPHA)
+        ax1.plot(x, savgol_filter(uppers, min(51,len(L)-(len(L)+1)%2), 3), color='blue',label='upper quartile',alpha = ALPHA)
+        ax1.plot(x, savgol_filter(medians, min(51,len(L)-(len(L)+1)%2), 3), color='orange',label='median',alpha = ALPHA)
+        ax1.plot(x, savgol_filter(lowers, min(51,len(L)-(len(L)+1)%2), 3), color='purple',label='lower quartile',alpha = ALPHA)
     ax1.scatter(x,mins,c = 'red',marker = '+',s = 10, alpha = ALPHA)
-    ax1.plot(x, savgol_filter(mins, 51, 3), color='red',label='minimum')
+    ax1.plot(x, savgol_filter(mins, min(51,len(L)-(len(L)+1)%2), 3), color='red',label='minimum')
 
 
     plt.hlines(y=209, xmin=0, xmax=len(L), linewidth=1, color='green',linestyles='dotted',label='win')

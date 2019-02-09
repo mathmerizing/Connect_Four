@@ -15,7 +15,7 @@ public class Population {
   private int epoch = 0;
   private List<Connection> connectionHistory = new ArrayList<>();
   private int globalNodeCount = 0;
-  private Player opponent = new Minimax(1,new Board(),4);
+  private Player opponent = new Minimax(1,new Board(),2);
   private boolean moreThanOneWinner = false;
 
   //hardcoded moves for both opponents
@@ -120,9 +120,12 @@ public class Population {
 
   public void play() throws Exception
   {
-    boolean starts = new Random().nextBoolean();
+    boolean starts = whoStarts();
     List<Integer> firstMoves = new ArrayList<>();
     int wincount = 0;
+
+    System.out.println("startingMoves.size(): " + startingMoves.size());
+    System.out.println("notStartingMoves.size(): " + notStartingMoves.size());
 
     if (starts) {
       if (!startingMoves.isEmpty()) { firstMoves.addAll(startingMoves.remove(0)); }
@@ -207,7 +210,7 @@ public class Population {
     }
 
     if (wincount < 0.6 * this.size ) {
-      System.out.println("first moves: " + firstMoves);
+      System.out.println("first moves: " + firstMoves + " ; starts: " + starts);
       if (starts) {
         startingMoves.add(0,firstMoves);
       } else {
@@ -446,6 +449,18 @@ public class Population {
      startingMoves.add(inverse(Arrays.asList(new Integer[] {3,3,2,2,4,4,3,5})));
      startingMoves.add(Arrays.asList(new Integer[] {2,3,3,4,5,4,4,5,3,5}));
      startingMoves.add(inverse(Arrays.asList(new Integer[] {2,3,3,4,5,4,4,5,3,5})));
+     startingMoves.add(Arrays.asList(new Integer[] {3,3,4,4}));
+     startingMoves.add(inverse(Arrays.asList(new Integer[] {3,3,4,4})));
+     startingMoves.add(Arrays.asList(new Integer[] {3,3,3,3,2,5}));
+     startingMoves.add(inverse(Arrays.asList(new Integer[] {3,3,3,3,2,5})));
+     startingMoves.add(Arrays.asList(new Integer[] {3,3,3,3,2,2}));
+     startingMoves.add(inverse(Arrays.asList(new Integer[] {3,3,3,3,2,2})));
+     startingMoves.add(Arrays.asList(new Integer[] {3,1,3,3,4,6,4,4}));
+     startingMoves.add(inverse(Arrays.asList(new Integer[] {3,1,3,3,4,6,4,4})));
+     startingMoves.add(Arrays.asList(new Integer[] {4,3,3,4,3,2,2,0,1,1}));
+     startingMoves.add(inverse(Arrays.asList(new Integer[] {4,3,3,4,3,2,2,0,1,1})));
+     startingMoves.add(Arrays.asList(new Integer[] {3,0,3,1,2,1,4,5,4,6}));
+     startingMoves.add(inverse(Arrays.asList(new Integer[] {3,0,3,1,2,1,4,5,4,6})));
 
      // genome is second
      notStartingMoves.add(Arrays.asList(new Integer[] {6,3,3,4,4,2}));
@@ -466,6 +481,16 @@ public class Population {
           inverted.add(6-o.intValue());
       }
       return inverted;
+  }
+
+  private boolean whoStarts()
+  {
+    if (!startingMoves.isEmpty() && startingMoves.size() >= notStartingMoves.size()) {
+      return true;
+    } else if (!notStartingMoves.isEmpty()) {
+      return false;
+    }
+    return new Random().nextBoolean();
   }
 
 

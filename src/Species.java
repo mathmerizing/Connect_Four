@@ -10,8 +10,8 @@ public class Species {
   private int N = 0; // size of species
   private double cumulativeFitness = 0;
 
-  private final double COMPATIBILITY_THRESHOLD = 4.0;
-  private final double ELITE_PERCENTAGE = 0.4;
+  private final double COMPATIBILITY_THRESHOLD = 3.0;
+  private final double ELITE_PERCENTAGE = 0.2;
   private final double RANDOM_PERCENTAGE = 0.1;
 
   public Species(int num)

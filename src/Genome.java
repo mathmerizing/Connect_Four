@@ -38,7 +38,7 @@ public class Genome extends Player {
 
   private int fitness = 0;
   private boolean illegalMove = false;
-  private boolean knowsPossibleMoves = false;
+  private boolean knowsPossibleMoves = true;
 
   public Genome(String name, int playerNum, Board board, Population population) throws Exception
   {
