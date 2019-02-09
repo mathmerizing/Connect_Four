@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import numpy as np
+from scipy.interpolate import spline
+from scipy.signal import savgol_filter
 import sys
 import os
 
@@ -30,12 +33,18 @@ def animate(i,fileName):
     plt.ylabel('FITNESS')
     plt.title('EVOLUTION ' + magicNumber)
 
-    ax1.plot(x, maxs, color='green',label='maximum')
+    ALPHA = 0.2
+
+    #Apply a Savitzky-Golay filter to the maximum array.
+    ax1.scatter(x,maxs,c = 'green',marker = '+',s = 10, alpha = ALPHA)
+    ax1.plot(x, savgol_filter(maxs, 51, 3), color='green',label='maximum')
     if (plotAll):
-        ax1.plot(x, uppers, color='blue',label='upper quartile')
-        ax1.plot(x, medians, color='orange',label='median')
-        ax1.plot(x, lowers, color='purple',label='lower quartile')
-    ax1.plot(x, mins, color='red',label='minimum')
+        ax1.plot(x, savgol_filter(uppers, 51, 3), color='blue',label='upper quartile',alpha = ALPHA)
+        ax1.plot(x, savgol_filter(medians, 51, 3), color='orange',label='median',alpha = ALPHA)
+        ax1.plot(x, savgol_filter(lowers, 51, 3), color='purple',label='lower quartile',alpha = ALPHA)
+    ax1.scatter(x,mins,c = 'red',marker = '+',s = 10, alpha = ALPHA)
+    ax1.plot(x, savgol_filter(mins, 51, 3), color='red',label='minimum')
+
 
     plt.hlines(y=209, xmin=0, xmax=len(L), linewidth=1, color='green',linestyles='dotted',label='win')
     plt.hlines(y=176, xmin=0, xmax=len(L), linewidth=1, color='black',linestyles='dotted',label='tie')
